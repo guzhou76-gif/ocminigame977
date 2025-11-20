@@ -2,348 +2,706 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>OC 小故事 · 网页小游戏</title>
+  <title>槿天华 · 小公司养成模拟器</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    /* —— 基础样式 —— */
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0f172a;
+      background: #020617;
       color: #e5e7eb;
       display: flex;
       justify-content: center;
       min-height: 100vh;
     }
+
     .game-wrapper {
       width: 100%;
-      max-width: 600px;
-      padding: 16px;
-    }
-    .card {
-      background: rgba(15,23,42,0.92);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      border: 1px solid rgba(148,163,184,0.4);
-      backdrop-filter: blur(10px);
+      max-width: 480px;
+      padding: 12px;
     }
 
-    /* —— 顶部信息 —— */
+    .card {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.6);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      background: radial-gradient(circle at 10% 0%, rgba(96,165,250,0.5) 0, transparent 55%),
+                  radial-gradient(circle at 90% 100%, rgba(244,114,182,0.4) 0, transparent 60%),
+                  #020617;
+    }
+
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.35;
+      filter: blur(4px);
+      transform: scale(1.05);
+    }
+
+    .content-layer {
+      position: relative;
+      padding: 10px;
+      backdrop-filter: blur(4px);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
     .title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      margin-bottom: 4px;
     }
     .subtitle {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-bottom: 12px;
+      font-size: 11px;
+      color: #cbd5f5;
     }
 
-    /* —— 立绘区域（可以以后换成背景图 / 角色图） —— */
-    .scene-visual {
-      height: 150px;
+    .badge-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.8);
+      color: #e5e7eb;
+    }
+
+    .sprite-area {
+      margin-top: 6px;
+      border-radius: 14px;
+      background: rgba(15,23,42,0.8);
+      display: flex;
+      align-items: center;
+      padding: 6px;
+      gap: 8px;
+    }
+
+    .sprite-box {
+      width: 140px;
+      aspect-ratio: 3/4;
       border-radius: 12px;
-      margin-bottom: 12px;
-      background: radial-gradient(circle at 20% 0%, #22d3ee 0, transparent 50%),
-                  radial-gradient(circle at 80% 100%, #a855f7 0, transparent 55%),
-                  #020617;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: #020617;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 12px;
+    }
+    .sprite-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .stat-box {
+      flex: 1;
+      font-size: 12px;
       color: #e5e7eb;
-      text-align: center;
-      font-size: 13px;
-    }
-
-    /* —— 文本区域 —— */
-    .speaker {
-      font-size: 13px;
-      color: #a5b4fc;
-      margin-bottom: 4px;
-    }
-    .content {
-      font-size: 14px;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      margin-bottom: 12px;
-    }
-
-    /* —— 选项按钮 —— */
-    .choices {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .choice-btn {
-      width: 100%;
-      border-radius: 999px;
-      padding: 8px 14px;
-      border: 1px solid rgba(129,140,248,0.7);
-      background: rgba(15,23,42,0.8);
-      color: #e5e7eb;
-      font-size: 14px;
-      text-align: left;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.08s, box-shadow 0.15s;
-    }
-    .choice-btn:hover {
-      background: rgba(79,70,229,0.8);
-      box-shadow: 0 4px 14px rgba(79,70,229,0.5);
-      transform: translateY(-1px);
-    }
-    .choice-btn:active {
-      transform: translateY(0);
-      box-shadow: none;
+      gap: 4px;
     }
 
-    /* —— 底部状态栏 —— */
-    .status-bar {
+    .stat-row {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .stat-label {
       font-size: 11px;
-      color: #9ca3af;
-      border-top: 1px dashed rgba(75,85,99,0.8);
-      padding-top: 6px;
+      color: #cbd5f5;
+      white-space: nowrap;
+    }
+
+    .stat-bar {
+      flex: 1;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+    }
+    .stat-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #38bdf8, #a855f7);
+      width: 50%;
+      transition: width 0.2s ease-out;
+    }
+
+    .stat-value {
+      font-size: 11px;
+      width: 42px;
+      text-align: right;
+      color: #e5e7eb;
+    }
+
+    .money-favor {
+      display: flex;
+      gap: 6px;
+      font-size: 11px;
       margin-top: 4px;
     }
     .pill {
+      flex: 1;
       border-radius: 999px;
-      padding: 2px 8px;
+      padding: 4px 8px;
       border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tabs {
+      margin-top: 8px;
+      display: flex;
+      gap: 4px;
       font-size: 11px;
     }
-    .pill-cta {
-      border-color: rgba(129,140,248,0.9);
-      color: #c7d2fe;
+    .tab-btn {
+      flex: 1;
+      padding: 6px 4px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(15,23,42,0.85);
+      color: #e5e7eb;
       cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .tab-btn.active {
+      border-color: rgba(129,140,248,0.95);
+      background: rgba(30,64,175,0.9);
+    }
+
+    .panel {
+      margin-top: 8px;
+      font-size: 12px;
+      border-radius: 12px;
+      background: rgba(15,23,42,0.85);
+      padding: 8px;
+      min-height: 110px;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .action-btn {
+      border-radius: 10px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.95);
+      color: #e5e7eb;
+      padding: 6px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .action-btn strong {
+      font-size: 12px;
+    }
+    .action-desc {
+      color: #9ca3af;
+      font-size: 11px;
+    }
+
+    .log {
+      font-size: 11px;
+      color: #cbd5f5;
+      margin-top: 4px;
+      max-height: 70px;
+      overflow-y: auto;
+      padding-right: 4px;
+      white-space: pre-wrap;
+    }
+
+    .gacha-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .gacha-cost {
+      font-size: 11px;
+      color: #e5e7eb;
+    }
+    .gacha-btn {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      border: none;
+      background: linear-gradient(90deg,#6366f1,#ec4899);
+      color: #f9fafb;
+      cursor: pointer;
+    }
+
+    .gacha-result {
+      font-size: 12px;
+      color: #e5e7eb;
+      margin-top: 4px;
+    }
+    .rarity-r {
+      color: #a5b4fc;
+    }
+    .rarity-sr {
+      color: #f97316;
+    }
+    .rarity-ssr {
+      color: #facc15;
+      text-shadow: 0 0 6px rgba(250,204,21,0.7);
+    }
+
+    .inventory-list {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #9ca3af;
+      max-height: 70px;
+      overflow-y: auto;
+    }
+
+    .footer {
+      margin-top: 4px;
+      font-size: 10px;
+      color: #9ca3af;
+      text-align: right;
     }
   </style>
 </head>
 <body>
-<div class="game-wrapper">
-  <div class="card">
-    <div class="title">「某某 OC」的小故事</div>
-    <div class="subtitle" id="subtitle">一个可以点击选项推进的网页小游戏 Demo</div>
+  <div class="game-wrapper">
+    <div class="card">
+      <!-- 背景图：这里先用占位路径，之后你换成自己的 -->
+      <div class="bg-layer" id="bgLayer"
+           style="background-image:url('images/bg_office_day.jpg');"></div>
 
-    <div class="scene-visual" id="sceneVisual">
-      这里将来可以放：场景说明 / OC 立绘 / 一句氛围文案
-    </div>
+      <div class="content-layer">
+        <!-- 顶部信息 -->
+        <div class="header">
+          <div>
+            <div class="title">槿天华的小公司日常</div>
+            <div class="subtitle">轻松办公 · 摸鱼养成 · 偶尔抽卡</div>
+            <div class="badge-row">
+              <div class="badge">桌宠 / 网页小游戏</div>
+              <div class="badge">本地存档 · 单机</div>
+            </div>
+          </div>
+        </div>
 
-    <div class="speaker" id="speaker"></div>
-    <div class="content" id="content"></div>
+        <!-- 角色区域 -->
+        <div class="sprite-area">
+          <div class="sprite-box">
+            <!-- 立绘占位：之后换成槿天华的图，如 images/jth_normal.png -->
+            <img id="spriteImg" src="images/jth_normal.png" alt="槿天华">
+          </div>
+          <div class="stat-box">
+            <div class="stat-row">
+              <div class="stat-label">心情 Mood</div>
+              <div class="stat-bar"><div id="moodBar" class="stat-bar-fill"></div></div>
+              <div id="moodText" class="stat-value"></div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-label">精力 Energy</div>
+              <div class="stat-bar"><div id="energyBar" class="stat-bar-fill"></div></div>
+              <div id="energyText" class="stat-value"></div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-label">好感 Favor</div>
+              <div class="stat-bar"><div id="favorBar" class="stat-bar-fill"></div></div>
+              <div id="favorText" class="stat-value"></div>
+            </div>
+            <div class="money-favor">
+              <div class="pill">
+                <span>公司资金</span>
+                <span id="moneyText">¥0</span>
+              </div>
+              <div class="pill">
+                <span>今日标签</span>
+                <span id="statusTag">初始上班日</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <div class="choices" id="choices"></div>
+        <!-- 选项卡 -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="daily">日常</button>
+          <button class="tab-btn" data-tab="work">工作</button>
+          <button class="tab-btn" data-tab="gacha">抽卡</button>
+        </div>
 
-    <div class="status-bar">
-      <div id="statusText">当前节点：start</div>
-      <div class="pill pill-cta" id="restartBtn">重新开始</div>
+        <!-- 面板：日常 -->
+        <div class="panel" id="panel-daily">
+          <div class="actions-grid">
+            <button class="action-btn" data-action="chat">
+              <strong>聊聊天</strong>
+              <div class="action-desc">和槿天华随便说说今天的破事。</div>
+            </button>
+            <button class="action-btn" data-action="relax">
+              <strong>摸鱼休息</strong>
+              <div class="action-desc">刷手机 / 看猫片，恢复心情与精力。</div>
+            </button>
+            <button class="action-btn" data-action="coffee">
+              <strong>咖啡续命</strong>
+              <div class="action-desc">精力回一点，心情看咖啡味道。</div>
+            </button>
+            <button class="action-btn" data-action="night">
+              <strong>切换昼夜</strong>
+              <div class="action-desc">换个背景图，假装是加班还是下班。</div>
+            </button>
+          </div>
+          <div class="log" id="logBox"></div>
+        </div>
+
+        <!-- 面板：工作 -->
+        <div class="panel" id="panel-work" style="display:none;">
+          <div class="actions-grid">
+            <button class="action-btn" data-action="workHard">
+              <strong>认真工作</strong>
+              <div class="action-desc">赚更多钱，但会掉不少精力和心情。</div>
+            </button>
+            <button class="action-btn" data-action="lightWork">
+              <strong>划水办公</strong>
+              <div class="action-desc">赚少一点钱，但没那么累。</div>
+            </button>
+            <button class="action-btn" data-action="report">
+              <strong>写周报</strong>
+              <div class="action-desc">好感略涨，心情略降（经典矛盾）。</div>
+            </button>
+            <button class="action-btn" data-action="meeting">
+              <strong>开会</strong>
+              <div class="action-desc">随机事件：有时涨好感，有时全员-心情。</div>
+            </button>
+          </div>
+          <div class="log" id="workLogBox"></div>
+        </div>
+
+        <!-- 面板：抽卡 -->
+        <div class="panel" id="panel-gacha" style="display:none;">
+          <div class="gacha-top">
+            <div class="gacha-cost">单抽：¥50，公司资金不足将无法抽卡</div>
+            <button class="gacha-btn" id="gachaBtn">单抽 x1</button>
+          </div>
+          <div id="gachaResult" class="gacha-result">还没有抽到任何东西。</div>
+          <div class="inventory-list" id="inventoryList">
+            当前持有：暂无卡片。
+          </div>
+        </div>
+
+        <div class="footer">
+          本地存档 · 关闭页面数据不会丢失
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  /*
-   * —— 整个游戏的“剧本”都写在这个 storyNodes 里 ——
-   * 每一个 key 就是一幕（一个节点）
-   * 每一幕包含：
-   *  - speaker：说话人（可以是 OC 名字，也可以留空）
-   *  - text：这一幕的正文
-   *  - visual：上方区域显示的文字（可以写场景、BGM 描述之类）
-   *  - choices：选项数组 -> { text: 选项文字, next: 跳到哪个节点 }
-   * 如果没有 choices，说明这是一个结局节点。
-   */
+  <script>
+    // —— 游戏状态（会存到 localStorage） ——
+    const DEFAULT_STATE = {
+      mood: 70,
+      energy: 70,
+      favor: 30,
+      money: 200,
+      dayMode: "day", // day / night
+      statusTag: "初始上班日",
+      inventory: [] // 存抽卡获得的id
+    };
 
-  const storyNodes = {
-    start: {
-      speaker: "旁白",
-      visual: "黄昏的天色压在旧城区的屋檐上，你第一次在这里等到 TA。",
-      text: "今天是你和 OC 第一次正式见面的日子。\n\n你提前了十分钟到达约定的路口，却发现他已经站在那儿，手里拎着一袋不知道什么东西。",
-      choices: [
-        { text: "打招呼：『你来得好早。』", next: "greeting_early" },
-        { text: "先观察一下他手里的袋子。", next: "observe_bag" }
-      ]
-    },
+    let state = loadState();
 
-    greeting_early: {
-      speaker: "你",
-      visual: "路灯刚刚亮起，光线在他眼里折出一点若有若无的亮。",
-      text: "“你来得好早。”\n\n你这样说出口的时候，其实心里有点高兴——\n总觉得，愿意早到的人，好像也在某种程度上把这件事看得很重要。",
-      choices: [
-        { text: "认真问他在等多久了。", next: "ask_wait_time" },
-        { text: "转移话题，问他袋子里是什么。", next: "observe_bag" }
-      ]
-    },
+    // —— 抽卡卡池设定（你可以之后改成更贴合槿天华的） ——
+    const GACHA_POOL = [
+      { id: "desk_cat",   name: "桌上路过的小猫",         rarity: "R",   type: "event", desc: "心情+5，今天办公区突然多了一只猫。" },
+      { id: "milk_tea",   name: "加珍珠奶茶券",           rarity: "R",   type: "item",  desc: "解锁特别摸鱼台词。（只是设定文案）" },
+      { id: "rainy_bg",   name: "雨天窗边背景",           rarity: "SR",  type: "bg",    desc: "解锁一种新的背景氛围。" },
+      { id: "chibi_skin", name: "Q版槿天华立绘",         rarity: "SR",  type: "skin",  desc: "可以切换成Q版形象显示。" },
+      { id: "ssr_event",  name: "SS级甲方表扬邮件",       rarity: "SSR", type: "event", desc: "心情+20，钱+100，但总感觉哪儿不太对劲。" }
+    ];
 
-    observe_bag: {
-      speaker: "你",
-      visual: "那是一只有点旧的帆布袋，像是陪他跑了很多年路。",
-      text: "你没直接搭话，而是先盯着他手里的袋子看。\n\n“这个？”他注意到你的视线，把袋子往上提了一下，“是给你的。”",
-      choices: [
-        { text: "接过来看一看。", next: "open_bag" },
-        { text: "有点受宠若惊，不敢收。", next: "refuse_bag" }
-      ]
-    },
+    // —— DOM 元素引用 ——
+    const moodBar    = document.getElementById("moodBar");
+    const moodText   = document.getElementById("moodText");
+    const energyBar  = document.getElementById("energyBar");
+    const energyText = document.getElementById("energyText");
+    const favorBar   = document.getElementById("favorBar");
+    const favorText  = document.getElementById("favorText");
+    const moneyText  = document.getElementById("moneyText");
+    const statusTag  = document.getElementById("statusTag");
+    const spriteImg  = document.getElementById("spriteImg");
+    const bgLayer    = document.getElementById("bgLayer");
 
-    ask_wait_time: {
-      speaker: "OC",
-      visual: "他偏了偏头，像是在计算，又像是在逃避精确的数字。",
-      text: "“也没多久。”他回答得很轻松，“不过来早一点也没关系。”\n\n你忽然意识到，在他的世界里，‘等你’这件事，似乎并不算什么麻烦。",
-      choices: [
-        { text: "你决定顺势把话题引到今天的计划。", next: "plan_today" },
-        { text: "你突然有点害羞，选择先看袋子里是什么。", next: "open_bag" }
-      ]
-    },
+    const logBox      = document.getElementById("logBox");
+    const workLogBox  = document.getElementById("workLogBox");
+    const gachaBtn    = document.getElementById("gachaBtn");
+    const gachaResult = document.getElementById("gachaResult");
+    const inventoryList = document.getElementById("inventoryList");
 
-    open_bag: {
-      speaker: "旁白",
-      visual: "塑料包装轻轻摩擦发出细碎的声音。",
-      text: "你接过袋子。里面整整齐齐地躺着——\n\n一盒你最喜欢的点心。\n\n“之前你随口提过一次。”他像是在解释，又像是在辩解，“刚好路过那家店，就顺手买了。”",
-      choices: [
-        { text: "你很认真地向他道谢。", next: "good_end" },
-        { text: "你打趣他说：『你记性不错嘛。』", next: "tease" }
-      ]
-    },
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const panels = {
+      daily: document.getElementById("panel-daily"),
+      work: document.getElementById("panel-work"),
+      gacha: document.getElementById("panel-gacha")
+    };
 
-    refuse_bag: {
-      speaker: "你",
-      visual: "风从街口灌过来，把话吹得有点轻。",
-      text: "“这太破费了吧……”你下意识地想退回去。\n\n然而他只是把袋子又往你怀里一塞：“那就当作是见面礼。”\n\n你忽然意识到——\n也许，在他的故事里，你是一个值得被郑重对待的角色。",
-      choices: [
-        { text: "你终于还是收下了。", next: "good_end" },
-        { text: "你嘴上继续推脱，但心里已经偷偷很高兴。", next: "tease" }
-      ]
-    },
+    // —— 初始化 UI ——
+    updateAllUI();
+    updateInventoryList();
+    updateSpriteByInventory();
 
-    plan_today: {
-      speaker: "你",
-      visual: "街道尽头是一家小小的咖啡馆，玻璃上写着今天的推荐菜单。",
-      text: "“那我们今天要先去哪里？”你问。\n\n他想了想，报出了两个选项——\n一家你一直很想去却没机会去的旧书店，\n或者，那家刚刚开张的、传说中甜品非常好吃的店。",
-      choices: [
-        { text: "去旧书店，那是你更熟悉的世界。", next: "bookstore" },
-        { text: "去甜品店，今天就当是纪念日。", next: "dessert_shop" }
-      ]
-    },
-
-    tease: {
-      speaker: "你",
-      visual: "你意识到自己在笑，而他也看着你笑。",
-      text: "“你记性不错嘛。”\n\n你试图用玩笑稀释那一点突如其来的心动。\n\n“还行吧。”他耸耸肩，“只记跟你有关的事。”",
-      choices: [
-        { text: "……你觉得今天大概会被他击败很多次。", next: "good_end" }
-      ]
-    },
-
-    bookstore: {
-      speaker: "旁白",
-      visual: "纸张与墨水的味道在门口就能闻到。",
-      text: "你们最后选择了旧书店。\n\n在一排排书架之间，你第一次和他并肩而立，\n讨论着那些纸页上已经结束、而你们的故事还刚刚开始的情节。",
-      choices: [
-        { text: "【结局】也许这一天会被你记很久。", next: "end_bookstore" }
-      ]
-    },
-
-    dessert_shop: {
-      speaker: "旁白",
-      visual: "展示柜里的蛋糕像是一整个玻璃盒的柔软梦境。",
-      text: "你们推门走进甜品店。\n\n他看着菜单，忽然提起：\n“下次你心情不好的时候，也可以自己来这里。就当是……我的秘密应援据点。”",
-      choices: [
-        { text: "【结局】你突然很想知道，会有多少个『下次』。", next: "end_dessert" }
-      ]
-    },
-
-    good_end: {
-      speaker: "系统",
-      visual: "【GOOD END】",
-      text: "这大概是一个非常普通、又非常难得的好结局。\n\n你们没有说什么惊天动地的话，\n只是一起，把一个傍晚走完。",
-      choices: [
-        { text: "退回到最开始，再玩一遍。", next: "start" }
-      ]
-    },
-
-    end_bookstore: {
-      speaker: "系统",
-      visual: "【END：书页之间的余白】",
-      text: "有些人是在同一页相遇的，\n而有些人，是从不同的章节走过来，只为了在同一行字里肩并肩。\n\n——至少，在这条时间线上，你们翻到了同一页。",
-      choices: [
-        { text: "回到开头", next: "start" }
-      ]
-    },
-
-    end_dessert: {
-      speaker: "系统",
-      visual: "【END：甜品店门口的约定】",
-      text: "你忽然觉得，自己也许并不是故事里的路人甲。\n\n你有资格被谁惦记，被谁专门记住一个口味，被谁提前十分种抵达。",
-      choices: [
-        { text: "回到开头", next: "start" }
-      ]
-    }
-  };
-
-  // —— 简单的引擎部分：负责根据当前节点刷新界面 ——
-  const speakerEl   = document.getElementById("speaker");
-  const contentEl   = document.getElementById("content");
-  const choicesEl   = document.getElementById("choices");
-  const sceneVisual = document.getElementById("sceneVisual");
-  const statusText  = document.getElementById("statusText");
-  const restartBtn  = document.getElementById("restartBtn");
-  const subtitleEl  = document.getElementById("subtitle");
-
-  let currentNodeId = "start";
-
-  function renderNode(nodeId) {
-    const node = storyNodes[nodeId];
-    if (!node) {
-      speakerEl.textContent = "";
-      contentEl.textContent = "（这里好像还没写剧情……检查一下 storyNodes 里是否有这个节点：" + nodeId + "）";
-      choicesEl.innerHTML = "";
-      statusText.textContent = "当前节点：" + nodeId + "（不存在）";
-      return;
-    }
-
-    currentNodeId = nodeId;
-    speakerEl.textContent = node.speaker ? node.speaker : "";
-    contentEl.textContent = node.text || "";
-    sceneVisual.textContent = node.visual || "";
-    statusText.textContent = "当前节点：" + nodeId;
-
-    // 更新选项按钮
-    choicesEl.innerHTML = "";
-    if (node.choices && node.choices.length > 0) {
-      node.choices.forEach(choice => {
-        const btn = document.createElement("button");
-        btn.className = "choice-btn";
-        btn.textContent = choice.text;
-        btn.addEventListener("click", () => {
-          renderNode(choice.next);
+    // —— tab 切换 ——
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tab = btn.dataset.tab;
+        tabButtons.forEach(b => b.classList.toggle("active", b === btn));
+        Object.keys(panels).forEach(key => {
+          panels[key].style.display = (key === tab) ? "block" : "none";
         });
-        choicesEl.appendChild(btn);
       });
-    } else {
-      const endText = document.createElement("div");
-      endText.style.fontSize = "12px";
-      endText.style.color = "#9ca3af";
-      endText.textContent = "（这个节点没有选项，算作一个终点。）";
-      choicesEl.appendChild(endText);
+    });
+
+    // —— 日常 & 工作按钮处理 ——
+    document.querySelectorAll(".action-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const action = btn.dataset.action;
+        handleAction(action);
+      });
+    });
+
+    // —— 抽卡按钮 ——
+    gachaBtn.addEventListener("click", handleGacha);
+
+    // —— 处理各种操作 —— 
+    function handleAction(action) {
+      switch (action) {
+        case "chat":
+          changeStat("mood", +5);
+          changeStat("favor", +3);
+          appendLog(logBox, "你和槿天华聊了会天，他吐槽了两句职场，心情似乎好了一点。");
+          setStatus("普通对话日");
+          break;
+        case "relax":
+          changeStat("mood", +8);
+          changeStat("energy", +5);
+          changeStat("money", -5);
+          appendLog(logBox, "你们一起摸鱼刷短视频，时间被吃掉了一点，公司资金小幅缩水。");
+          setStatus("摸鱼进行中");
+          break;
+        case "coffee":
+          changeStat("energy", +10);
+          // 心情随机上下
+          const moodDelta = (Math.random() < 0.7) ? +3 : -2;
+          changeStat("mood", moodDelta);
+          appendLog(logBox, `咖啡续命完成，精力+10，心情${moodDelta >= 0 ? "+" + moodDelta : moodDelta}。`);
+          setStatus("咖啡时间");
+          break;
+        case "night":
+          toggleDayNight();
+          break;
+        case "workHard":
+          changeStat("money", +40);
+          changeStat("energy", -15);
+          changeStat("mood", -10);
+          appendLog(workLogBox, "槿天华认真加班了一大轮，项目推进飞快，但精神状态略显危险。");
+          setStatus("高强度加班日");
+          break;
+        case "lightWork":
+          changeStat("money", +20);
+          changeStat("energy", -8);
+          changeStat("mood", -3);
+          appendLog(workLogBox, "今天以划水为主，偶尔认真，勉强算完成 KPI。");
+          setStatus("安全摸鱼日");
+          break;
+        case "report":
+          changeStat("favor", +5);
+          changeStat("mood", -4);
+          appendLog(workLogBox, "你帮忙润色了周报，他看起来有点感动，不过想到周一早会又略微崩溃。");
+          setStatus("周报战士");
+          break;
+        case "meeting":
+          const good = Math.random() < 0.5;
+          if (good) {
+            changeStat("mood", +6);
+            changeStat("favor", +4);
+            appendLog(workLogBox, "会议出奇地顺利，甲方没有乱提需求，堪称奇迹。");
+            setStatus("会议奇迹日");
+          } else {
+            changeStat("mood", -10);
+            changeStat("energy", -6);
+            appendLog(workLogBox, "会议开成了吐槽大会和需求炸弹现场，所有人心情-10。");
+            setStatus("会议灾难日");
+          }
+          break;
+        default:
+          break;
+      }
+      saveState();
+      updateAllUI();
     }
-  }
 
-  restartBtn.addEventListener("click", () => {
-    renderNode("start");
-  });
+    function toggleDayNight() {
+      if (state.dayMode === "day") {
+        state.dayMode = "night";
+        bgLayer.style.backgroundImage = "url('images/bg_office_night.jpg')";
+        appendLog(logBox, "灯光暗了下来，办公室变成夜间模式。加班の气息。");
+        setStatus("夜间办公");
+      } else {
+        state.dayMode = "day";
+        bgLayer.style.backgroundImage = "url('images/bg_office_day.jpg')";
+        appendLog(logBox, "窗外亮了起来，仿佛一切都还来得及。");
+        setStatus("白天工作");
+      }
+      saveState();
+    }
 
-  // 可以在这里改成你 OC 的名字或一句简介
-  subtitleEl.textContent = "你正在体验：某某 OC 的个人线小故事 Demo";
+    // —— 抽卡逻辑 —— 
+    function handleGacha() {
+      const cost = 50;
+      if (state.money < cost) {
+        gachaResult.textContent = "资金不足，槿天华看了看账本，摇头叹气。";
+        return;
+      }
+      state.money -= cost;
 
-  // 初始化
-  renderNode("start");
-</script>
+      // 简单概率：SSR 5%，SR 20%，R 75%
+      const rand = Math.random();
+      let rarity;
+      if (rand < 0.05) rarity = "SSR";
+      else if (rand < 0.25) rarity = "SR";
+      else rarity = "R";
+
+      const candidates = GACHA_POOL.filter(c => c.rarity === rarity);
+      const picked = candidates[Math.floor(Math.random() * candidates.length)];
+
+      if (!state.inventory.includes(picked.id)) {
+        state.inventory.push(picked.id);
+      }
+
+      let rarityClass = "rarity-r";
+      if (rarity === "SR") rarityClass = "rarity-sr";
+      if (rarity === "SSR") rarityClass = "rarity-ssr";
+
+      gachaResult.innerHTML =
+        `抽到卡片：<span class="${rarityClass}">[${rarity}] ${picked.name}</span><br>${picked.desc}`;
+
+      setStatus("抽卡成瘾中");
+      appendLog(logBox, `抽到了：${picked.name} (${rarity})`);
+
+      updateInventoryList();
+      updateSpriteByInventory();
+      saveState();
+      updateAllUI();
+    }
+
+    function updateInventoryList() {
+      if (!state.inventory || state.inventory.length === 0) {
+        inventoryList.textContent = "当前持有：暂无卡片。";
+        return;
+      }
+      const lines = state.inventory.map(id => {
+        const card = GACHA_POOL.find(c => c.id === id);
+        if (!card) return id;
+        return `[${card.rarity}] ${card.name}`;
+      });
+      inventoryList.textContent = "当前持有：\n" + lines.join("\n");
+    }
+
+    function updateSpriteByInventory() {
+      // 如果抽到 chibi_skin，就换立绘（前提是你有对应的图片）
+      if (state.inventory.includes("chibi_skin")) {
+        spriteImg.src = "images/jth_chibi.png"; // 之后放你自己的Q版图
+      } else {
+        spriteImg.src = "images/jth_normal.png";
+      }
+
+      // 根据背景卡切换氛围（你也可以扩展）
+      if (state.inventory.includes("rainy_bg") && state.dayMode === "day") {
+        bgLayer.style.backgroundImage = "url('images/bg_office_rainy.jpg')";
+      } else {
+        bgLayer.style.backgroundImage =
+          state.dayMode === "day"
+            ? "url('images/bg_office_day.jpg')"
+            : "url('images/bg_office_night.jpg')";
+      }
+    }
+
+    // —— 通用工具函数 —— 
+    function clamp(v, min, max) {
+      return Math.max(min, Math.min(max, v));
+    }
+
+    function changeStat(key, delta) {
+      if (!(key in state)) return;
+      if (key === "money") {
+        state.money = Math.max(0, state.money + delta);
+      } else {
+        state[key] = clamp(state[key] + delta, 0, 100);
+      }
+    }
+
+    function setStatus(text) {
+      state.statusTag = text;
+    }
+
+    function appendLog(box, text) {
+      const now = new Date();
+      const time = now.toTimeString().slice(0,5);
+      const line = `[${time}] ${text}`;
+      if (!box.textContent) {
+        box.textContent = line;
+      } else {
+        box.textContent = box.textContent + "\n" + line;
+      }
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function updateAllUI() {
+      moodBar.style.width   = state.mood   + "%";
+      energyBar.style.width = state.energy + "%";
+      favorBar.style.width  = state.favor  + "%";
+
+      moodText.textContent   = state.mood   + "/100";
+      energyText.textContent = state.energy + "/100";
+      favorText.textContent  = state.favor  + "/100";
+
+      moneyText.textContent = "¥" + state.money;
+      statusTag.textContent = state.statusTag;
+
+      // 确认背景跟状态一致
+      updateSpriteByInventory();
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem("jth_company_state");
+        if (!raw) return { ...DEFAULT_STATE };
+        const parsed = JSON.parse(raw);
+        return { ...DEFAULT_STATE, ...parsed };
+      } catch (e) {
+        return { ...DEFAULT_STATE };
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem("jth_company_state", JSON.stringify(state));
+    }
+  </script>
 </body>
 </html>
