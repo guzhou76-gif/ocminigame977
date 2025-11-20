@@ -126,10 +126,10 @@
     .desk-area {
       position: relative;
       border-radius: var(--radius-md);
-      overflow: hidden;
+      overflow: visible;
       background: #2a2b33;
       height: 100%;
-      min-height: 210px;
+      min-height: 260px;
     }
 
     .desk-bg {
@@ -137,32 +137,68 @@
       inset: 0;
       background-size: cover;
       background-position: center;
-      opacity: 0.6;
-      filter: blur(2px);
-      transform: scale(1.04);
+      opacity: 0.8;
+      transform: scale(1.02);
+      border-radius: var(--radius-md);
     }
 
     .desk-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.2));
+      background: linear-gradient(to top, rgba(0,0,0,0.35), rgba(0,0,0,0.1));
+      border-radius: var(--radius-md);
     }
 
     .desk-foreground {
       position: relative;
       height: 100%;
-      display: flex;
+      padding: 18px 16px 24px;
+    }
+
+    .desk-office-badge {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(17, 18, 25, 0.65);
+      border: 1px solid rgba(198,193,194,0.35);
+      color: #f5e9ea;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      display: inline-flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 8px 10px 10px;
+      gap: 2px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      pointer-events: none;
+    }
+
+    .desk-office-badge .badge-value {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .desk-office-badge .badge-label {
+      font-size: 10px;
+      color: rgba(245, 233, 234, 0.8);
+      letter-spacing: 0.2em;
+    }
+
+    .desk-office-badge.is-busy {
+      background: rgba(101,39,42,0.75);
+      border-color: rgba(247,213,218,0.6);
     }
 
     .sprite-lane {
       position: relative;
-      flex: 1;
+      height: 100%;
+      padding-bottom: 110px;
       display: flex;
       align-items: flex-end;
-      padding-bottom: 8px;
+      justify-content: center;
     }
 
     .sprite-hit-area {
@@ -174,24 +210,24 @@
     .sprite {
       position: absolute;
       bottom: 0;
-      width: 120px;
-      max-width: 40%;
-      aspect-ratio: 3/5;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid rgba(198,193,194,0.5);
-      background: #3D3E49;
+      width: clamp(180px, 34vw, 320px);
+      aspect-ratio: auto;
+      border-radius: 0;
+      overflow: visible;
+      border: none;
+      background: transparent;
       cursor: pointer;
       animation: walk 12s ease-in-out infinite alternate;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: none;
       transform-origin: center bottom;
       transition: transform 0.15s ease-out, box-shadow 0.15s;
+      filter: drop-shadow(0 18px 28px rgba(0,0,0,0.55));
     }
 
     .sprite img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
+      object-fit: contain;
       display: block;
     }
 
@@ -207,11 +243,21 @@
     }
 
     .desk-status-row {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       gap: 8px;
       font-size: 11px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(18,18,24,0.65);
+      border: 1px solid rgba(198,193,194,0.35);
+      backdrop-filter: blur(8px);
     }
 
     .status-group {
@@ -574,6 +620,10 @@
                  style="background-image:url('images/bg_desk_day.jpg');"></div>
             <div class="desk-overlay"></div>
             <div class="desk-foreground">
+                <div class="desk-office-badge" id="officeBadge">
+                  <div class="badge-label">Office 状态</div>
+                  <div class="badge-value" id="officeStateText">日间 · 桌宠值守</div>
+                </div>
               <div class="sprite-lane">
                 <div class="sprite-hit-area">
                   <div class="sprite" id="sprite">
@@ -745,6 +795,8 @@
   const deskBg = document.getElementById("deskBg");
   const sprite = document.getElementById("sprite");
   const spriteImg = document.getElementById("spriteImg");
+  const officeBadge = document.getElementById("officeBadge");
+  const officeStateText = document.getElementById("officeStateText");
 
   const dialogName = document.getElementById("dialogName");
   const dialogText = document.getElementById("dialogText");
@@ -1030,6 +1082,18 @@
       deskBg.style.backgroundImage = "url('images/bg_desk_night.jpg')";
       timeTag.textContent = "夜间模式";
       modeTag.textContent = "可能在加班";
+    }
+
+    if (officeStateText && officeBadge) {
+      const busy = state.workload >= 60 || state.tasks >= 5;
+      let descriptor;
+      if (state.dayMode === "day") {
+        descriptor = busy ? "日间 · 紧急值守" : "日间 · 桌宠值守";
+      } else {
+        descriptor = busy ? "夜间 · 加班警戒" : "夜间 · 夜班驻守";
+      }
+      officeStateText.textContent = descriptor;
+      officeBadge.classList.toggle("is-busy", busy);
     }
 
     // 日志
