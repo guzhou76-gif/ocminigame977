@@ -170,7 +170,7 @@
     .sprite {
       position: absolute;
       left: 50%;
-      bottom: 0;
+      bottom: 20px;
       transform: translateX(-50%);
       width: min(42%, 190px);
       background: transparent;
@@ -798,12 +798,42 @@ function loadState() {
 }
 
 /* 页面交互绑定 */
+
+/* 1. 标签页切换 */
+const tabButtons = document.querySelectorAll(".tab-btn");
+const panels = {
+  desk: document.getElementById("panel-desk"),
+  task: document.getElementById("panel-task"),
+  chat: document.getElementById("panel-chat")
+};
+
+tabButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const tab = btn.dataset.tab;      // desk / task / chat
+
+    // 按钮高亮
+    tabButtons.forEach(b => {
+      b.classList.toggle("active", b === btn);
+    });
+
+    // 面板显示/隐藏
+    Object.keys(panels).forEach(key => {
+      panels[key].classList.toggle("active", key === tab);
+    });
+  });
+});
+
+/* 2. 桌面按钮 */
 document.querySelectorAll(".action-card").forEach(btn => {
   btn.onclick = () => act(btn.dataset.action);
 });
+
+/* 3. 任务按钮 */
 document.querySelectorAll(".task-btn").forEach(btn => {
   btn.onclick = () => taskAct(btn.dataset.task);
 });
+
+/* 4. 聊天发送 */
 document.getElementById("chatSendBtn").onclick = () => {
   const text = chatPreset.value;
   pushChat("you", text);
