@@ -173,12 +173,13 @@
       bottom: 0;
       transform: translateX(-50%);
       width: min(42%, 190px);
-      border: none;
       background: transparent;
       box-shadow: none;
       cursor: pointer;
       animation: idleFloat 3.2s ease-in-out infinite;
       transform-origin: center bottom;
+      z-index: 9999 !important;   /* ★★★ 新增：强制浮到最上层 */
+      pointer-events: auto;
     }
 
     @keyframes idleFloat {
