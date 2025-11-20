@@ -11,15 +11,12 @@
       --c-accent: #65272A;
       --c-text-main: #C6C1C2;
       --c-text-sub: #9B9EA6;
-      --c-border: #9B9EA6;
       --radius-lg: 18px;
       --radius-md: 12px;
       --shadow-soft: 0 16px 40px rgba(0,0,0,0.4);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -31,7 +28,6 @@
       min-height: 100vh;
     }
 
-    /* 页面整体布局 */
     .app-shell {
       width: 100%;
       max-width: 820px;
@@ -61,31 +57,10 @@
       border-bottom: 1px solid rgba(198,193,194,0.3);
       background: rgba(61,62,73,0.9);
     }
-
-    .top-info {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .top-title {
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-    }
-
-    .top-sub {
-      font-size: 11px;
-      color: var(--c-text-sub);
-    }
-
-    .top-pills {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
+    .top-info { display: flex; flex-direction: column; gap: 2px; }
+    .top-title { font-size: 16px; font-weight: 600; letter-spacing: .04em; }
+    .top-sub { font-size: 11px; color: var(--c-text-sub); }
+    .top-pills { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .pill {
       border-radius: 999px;
       border: 1px solid rgba(198,193,194,0.4);
@@ -94,19 +69,17 @@
       color: var(--c-text-sub);
       background: rgba(33,34,42,0.7);
     }
-
     .pill-accent {
       border-color: rgba(101,39,42,0.9);
-      color: #f0d9da;
       background: rgba(101,39,42,0.9);
+      color: #f0d9da;
     }
 
     /* 主体布局 */
     .main-layout {
       display: grid;
-      grid-template-rows: minmax(270px, 46vh) minmax(240px, 54vh);
+      grid-template-rows: minmax(320px, 46vh) minmax(240px, 54vh);
     }
-
     @media (min-width: 900px) {
       .main-layout {
         grid-template-columns: minmax(360px, 1.2fr) minmax(340px, 1fr);
@@ -119,36 +92,31 @@
 
     /* 桌面区域 */
     .desk-area-wrapper {
-      position: relative;
       padding: 10px 12px 8px;
       border-bottom: 1px solid rgba(198,193,194,0.35);
     }
-
     .desk-area {
       position: relative;
       border-radius: var(--radius-md);
       overflow: hidden;
       background: #2a2b33;
       height: 100%;
-      min-height: 270px; /* ★★ 原本 210，调到 270，让立绘不会被挡住 */
+      min-height: 320px; /* 加高容器，保证整个人能露出来 */
     }
-
     .desk-bg {
       position: absolute;
       inset: 0;
       background-size: cover;
       background-position: center;
-      opacity: 0.6;
+      opacity: .6;
       filter: blur(2px);
       transform: scale(1.04);
     }
-
     .desk-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.2));
+      background: linear-gradient(to top, rgba(0,0,0,.5), rgba(0,0,0,.2));
     }
-
     .desk-foreground {
       position: relative;
       height: 100%;
@@ -166,30 +134,26 @@
       position: relative;
     }
 
-    /* ★★ 新版立绘样式：去边框、居中、轻微漂浮 */
+    /* 立绘：去边框 + 居中 + 轻微漂浮 */
     .sprite {
       position: absolute;
       left: 50%;
-      bottom: 100px;
+      bottom: 0;               /* 从底部贴边开始 */
       transform: translateX(-50%);
-      width: min(42%, 190px);
+      width: min(34%, 200px);  /* 调整整体大小 */
+      z-index: 10;             /* 在背景和遮罩之上 */
       background: transparent;
-      box-shadow: none;
       cursor: pointer;
       animation: idleFloat 3.2s ease-in-out infinite;
       transform-origin: center bottom;
-      z-index: 9999 !important;   /* ★★★ 新增：强制浮到最上层 */
-      pointer-events: auto;
     }
-
     @keyframes idleFloat {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(4px); }
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%     { transform: translateX(-50%) translateY(4px); }
     }
-
     .sprite img {
       width: 100%;
-      height: 100%;
+      height: auto;
       display: block;
       object-fit: contain;
     }
@@ -202,76 +166,42 @@
       gap: 8px;
       font-size: 11px;
     }
-
     .status-group {
       display: flex;
       gap: 8px;
-      align-items: center;
       flex-wrap: wrap;
+      align-items: center;
     }
-
-    .status-item {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 80px;
-    }
-
-    .status-label {
-      color: var(--c-text-sub);
-      font-size: 10px;
-    }
-
-    .status-bar {
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(24,25,33,0.9);
-      overflow: hidden;
-    }
+    .status-item { display: flex; flex-direction: column; gap: 2px; min-width: 80px; }
+    .status-label { font-size: 10px; color: var(--c-text-sub); }
+    .status-bar { height: 6px; border-radius: 999px; background: rgba(24,25,33,.9); overflow: hidden; }
     .status-bar-fill {
       height: 100%;
       border-radius: 999px;
       background: linear-gradient(90deg, var(--c-accent), #C6C1C2);
-      transition: width 0.2s ease-out;
+      transition: width .2s ease-out;
     }
-
-    .status-value {
-      font-size: 11px;
-      color: var(--c-text-main);
-    }
-
+    .status-value { font-size: 11px; }
     .desk-time-tag {
       font-size: 10px;
       color: var(--c-text-sub);
       padding: 6px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(198,193,194,0.4);
-      background: rgba(24,25,33,0.9);
+      border: 1px solid rgba(198,193,194,.4);
+      background: rgba(24,25,33,.9);
       white-space: nowrap;
     }
 
     /* 对话框 */
-    .dialog-wrapper {
-      padding: 6px 12px 10px;
-    }
-
+    .dialog-wrapper { padding: 6px 12px 10px; }
     .dialog-box {
       border-radius: var(--radius-md);
-      border: 1px solid rgba(198,193,194,0.45);
-      background: linear-gradient(135deg, rgba(61,62,73,0.95), rgba(33,34,42,0.95));
+      border: 1px solid rgba(198,193,194,.45);
+      background: linear-gradient(135deg, rgba(61,62,73,.95), rgba(33,34,42,.95));
       padding: 8px 10px;
     }
-
-    .dialog-name {
-      font-size: 11px;
-      color: var(--c-text-sub);
-    }
-
-    .dialog-text {
-      font-size: 13px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
+    .dialog-name { font-size: 11px; color: var(--c-text-sub); }
+    .dialog-text { font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
 
     /* 控制区 */
     .control-area {
@@ -280,71 +210,63 @@
       flex-direction: column;
       gap: 6px;
     }
-
-    .tabs-row {
-      display: flex;
-      gap: 6px;
-    }
-
+    .tabs-row { display: flex; gap: 6px; }
     .tab-btn {
       flex: 1;
       border-radius: 999px;
       padding: 6px 8px;
-      font-size: 12px;
       border: none;
       cursor: pointer;
-      background: rgba(33,34,42,0.9);
+      font-size: 12px;
+      background: rgba(33,34,42,.9);
       color: var(--c-text-sub);
-      transition: background 0.15s, color 0.15s;
+      border: 1px solid transparent;
+      transition: background .15s, color .15s, border-color .15s;
     }
-
     .tab-btn.active {
-      background: rgba(101,39,42,0.95);
+      background: rgba(101,39,42,.95);
       color: #f5e9ea;
-      border: 1px solid rgba(198,193,194,0.7);
+      border-color: rgba(198,193,194,.7);
     }
 
-    .panels {
-      position: relative;
-      flex: 1;
-    }
-
+    .panels { position: relative; flex: 1; }
     .panel {
       border-radius: var(--radius-md);
-      border: 1px solid rgba(198,193,194,0.35);
-      background: rgba(33,34,42,0.96);
+      border: 1px solid rgba(198,193,194,.35);
+      background: rgba(33,34,42,.96);
       padding: 8px;
       display: none;
       height: 100%;
     }
+    .panel.active { display: block; }
 
-    .panel.active {
-      display: block;
-    }
-
-    /* 桌面面板 */
     .actions-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 6px;
+      margin-bottom: 4px;
     }
-
-    .action-card {
+    .action-card,
+    .task-btn {
       border-radius: 10px;
-      border: 1px solid rgba(198,193,194,0.4);
-      background: rgba(37,38,47,0.95);
+      border: 1px solid rgba(198,193,194,.4);
+      background: rgba(37,38,47,.95);
       padding: 6px;
       cursor: pointer;
+      font-size: 11px;
+      text-align: left;
     }
+    .action-title { font-size: 12px; font-weight: 500; }
+    .action-sub { font-size: 11px; color: var(--c-text-sub); }
 
-    .action-title {
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .action-sub {
+    .small-log,
+    .task-log {
       font-size: 11px;
       color: var(--c-text-sub);
+      max-height: 80px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin-top: 4px;
     }
 
     /* 聊天界面 */
@@ -356,72 +278,56 @@
       overflow: hidden;
       background: #2c2d35;
     }
-
     .chat-top {
       padding: 6px 8px;
       background: #3D3E49;
-      border-bottom: 1px solid rgba(198,193,194,0.25);
+      border-bottom: 1px solid rgba(198,193,194,.25);
       display: flex;
       justify-content: space-between;
       font-size: 11px;
     }
-
     .chat-body {
       flex: 1;
       padding: 6px 6px 0;
       overflow-y: auto;
+      background: #2f3039;
     }
-
-    .chat-row {
-      display: flex;
-      margin-bottom: 4px;
-    }
-
-    .chat-row.oc {
-      justify-content: flex-start;
-    }
-    .chat-row.you {
-      justify-content: flex-end;
-    }
-
+    .chat-row { display: flex; margin-bottom: 4px; }
+    .chat-row.oc { justify-content: flex-start; }
+    .chat-row.you { justify-content: flex-end; }
     .chat-bubble {
       max-width: 80%;
       padding: 5px 8px;
       border-radius: 12px;
       font-size: 11px;
-      white-space: pre-wrap;
       line-height: 1.4;
+      white-space: pre-wrap;
     }
-
     .chat-row.oc .chat-bubble {
       border-bottom-left-radius: 3px;
       background: #3D3E49;
-      color: var(--c-text-main);
     }
-
     .chat-row.you .chat-bubble {
       border-bottom-right-radius: 3px;
       background: #65272A;
       color: #f5e9ea;
     }
-
     .chat-input-bar {
       padding: 4px 6px;
       display: flex;
       gap: 4px;
       background: #3D3E49;
-      border-top: 1px solid rgba(198,193,194,0.25);
+      border-top: 1px solid rgba(198,193,194,.25);
     }
-
     .chat-preset {
       flex: 1;
       border-radius: 999px;
       padding: 4px 8px;
       background: #2a2b33;
       color: var(--c-text-sub);
-      border: 1px solid rgba(198,193,194,0.4);
+      border: 1px solid rgba(198,193,194,.4);
+      font-size: 11px;
     }
-
     .chat-send-btn {
       border-radius: 999px;
       border: none;
@@ -438,10 +344,8 @@
       color: var(--c-text-sub);
       text-align: right;
     }
-
   </style>
 </head>
-
 <body>
 <div class="app-shell">
   <div class="game-card">
@@ -459,8 +363,7 @@
     </div>
 
     <div class="main-layout">
-
-      <!-- 左：桌面区域 & 对话 -->
+      <!-- 左：桌面 + 对话 -->
       <div>
         <div class="desk-area-wrapper">
           <div class="desk-area">
@@ -479,29 +382,28 @@
                   <div class="status-item">
                     <div class="status-label">心情</div>
                     <div class="status-bar"><div class="status-bar-fill" id="moodBar"></div></div>
-                    <div class="status-value" id="moodText">70/100</div>
+                    <div class="status-value" id="moodText"></div>
                   </div>
                   <div class="status-item">
                     <div class="status-label">压力</div>
                     <div class="status-bar"><div class="status-bar-fill" id="stressBar"></div></div>
-                    <div class="status-value" id="stressText">40/100</div>
+                    <div class="status-value" id="stressText"></div>
                   </div>
                   <div class="status-item">
                     <div class="status-label">事务</div>
                     <div class="status-bar"><div class="status-bar-fill" id="workloadBar"></div></div>
-                    <div class="status-value" id="workloadText">20/100</div>
+                    <div class="status-value" id="workloadText"></div>
                   </div>
                 </div>
                 <div class="desk-time-tag" id="timeTag">日间模式</div>
               </div>
-
             </div>
           </div>
         </div>
 
         <div class="dialog-wrapper">
           <div class="dialog-box">
-            <div class="dialog-name" id="dialogName">槿天华</div>
+            <div class="dialog-name">槿天华</div>
             <div class="dialog-text" id="dialogText">
 ……刚刚被塞进这个屏幕里的是我。暂时借用一下你的桌面，麻烦多关照。
             </div>
@@ -509,19 +411,15 @@
         </div>
       </div>
 
-      <!-- 右：控制区域 -->
+      <!-- 右：控制区 -->
       <div class="control-area">
-
-        <!-- 标签页 -->
         <div class="tabs-row">
           <button class="tab-btn active" data-tab="desk">桌面</button>
           <button class="tab-btn" data-tab="task">任务</button>
           <button class="tab-btn" data-tab="chat">消息</button>
         </div>
 
-        <!-- 面板区域 -->
         <div class="panels">
-
           <!-- 桌面互动 -->
           <div class="panel active" id="panel-desk">
             <div class="actions-grid">
@@ -545,13 +443,12 @@
             <div class="small-log" id="deskLog"></div>
           </div>
 
-          <!-- 任务小游戏 -->
+          <!-- 任务 -->
           <div class="panel" id="panel-task">
-            <div class="task-header">
-              <div>未处理事务：<span id="taskCount">3</span></div>
-              <div>今日模式：<span id="taskMode">适度忙碌</span></div>
+            <div style="font-size:11px;display:flex;justify-content:space-between;margin-bottom:4px;">
+              <div>未处理事务：<span id="taskCount"></span></div>
+              <div>今日模式：<span id="taskMode"></span></div>
             </div>
-
             <div class="actions-grid">
               <button class="task-btn" data-task="spawn">
                 生成新任务<br><span>新邮件 / 抄送 / 周报。</span>
@@ -566,23 +463,20 @@
                 假装没看到<br><span>危险行为。</span>
               </button>
             </div>
-
             <div class="task-log" id="taskLog"></div>
           </div>
 
-          <!-- 聊天界面 -->
+          <!-- 聊天 -->
           <div class="panel" id="panel-chat">
             <div class="chat-shell">
               <div class="chat-top">
                 <div>
-                  <div class="chat-name">槿天华</div>
+                  <div>槿天华</div>
                   <div id="chatStatus" style="font-size:10px;color:#C6C1C2;">状态：桌宠在线</div>
                 </div>
                 <div class="pill" style="padding:2px 8px;">聊天界面</div>
               </div>
-
               <div class="chat-body" id="chatBody"></div>
-
               <div class="chat-input-bar">
                 <select class="chat-preset" id="chatPreset">
                   <option>现在忙吗？</option>
@@ -592,260 +486,284 @@
                 </select>
                 <button class="chat-send-btn" id="chatSendBtn">发送</button>
               </div>
-
             </div>
           </div>
-
         </div>
 
         <div class="bottom-note">数据存储于本地浏览器，不会上传。</div>
-
       </div>
-
     </div>
-
   </div>
 </div>
 
-
 <script>
-/* ---------------------------
-   状态保存
-----------------------------*/
-const DEFAULT_STATE = {
-  mood: 70,
-  stress: 40,
-  workload: 25,
-  tasks: 3,
-  dayMode: "day",
-  deskLog: "",
-  taskLog: "",
-  chatHistory: []
-};
+  /* ---------- 状态 ---------- */
+  const DEFAULT_STATE = {
+    mood: 70,
+    stress: 40,
+    workload: 25,
+    tasks: 3,
+    dayMode: "day",
+    deskLog: "",
+    taskLog: "",
+    chatHistory: []
+  };
+  let state = loadState();
 
-let state = loadState();
+  /* ---------- DOM ---------- */
+  const moodBar = document.getElementById("moodBar");
+  const stressBar = document.getElementById("stressBar");
+  const workloadBar = document.getElementById("workloadBar");
+  const moodText = document.getElementById("moodText");
+  const stressText = document.getElementById("stressText");
+  const workloadText = document.getElementById("workloadText");
+  const deskBg = document.getElementById("deskBg");
+  const timeTag = document.getElementById("timeTag");
+  const modeTag = document.getElementById("modeTag");
+  const dialogText = document.getElementById("dialogText");
+  const deskLog = document.getElementById("deskLog");
+  const taskLog = document.getElementById("taskLog");
+  const taskCount = document.getElementById("taskCount");
+  const taskMode = document.getElementById("taskMode");
+  const spriteImg = document.getElementById("spriteImg");
+  const chatBody = document.getElementById("chatBody");
+  const chatStatus = document.getElementById("chatStatus");
+  const chatPreset = document.getElementById("chatPreset");
 
-/* 获取元素 */
-const moodBar = document.getElementById("moodBar");
-const stressBar = document.getElementById("stressBar");
-const workloadBar = document.getElementById("workloadBar");
-const moodText = document.getElementById("moodText");
-const stressText = document.getElementById("stressText");
-const workloadText = document.getElementById("workloadText");
-const deskBg = document.getElementById("deskBg");
-const timeTag = document.getElementById("timeTag");
-const modeTag = document.getElementById("modeTag");
-const topSub = document.getElementById("topSub");
-const deskLog = document.getElementById("deskLog");
-const taskLog = document.getElementById("taskLog");
-const taskCount = document.getElementById("taskCount");
-const taskMode = document.getElementById("taskMode");
-const dialogText = document.getElementById("dialogText");
-const spriteImg = document.getElementById("spriteImg");
-const chatBody = document.getElementById("chatBody");
-const chatStatus = document.getElementById("chatStatus");
-const chatPreset = document.getElementById("chatPreset");
+  /* ---------- 标签页切换 ---------- */
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  const panels = {
+    desk: document.getElementById("panel-desk"),
+    task: document.getElementById("panel-task"),
+    chat: document.getElementById("panel-chat")
+  };
 
-/* 初始化聊天 */
-function initChat() {
-  if (!state.chatHistory.length) {
-    state.chatHistory = [
-      { from: "oc", text: "这里是桌面版的我。" },
-      { from: "oc", text: "有什么想处理的事务，可以告诉我。" }
-    ];
-    saveState();
-  }
-  renderChat();
-}
-
-/* 渲染聊天 */
-function renderChat() {
-  chatBody.innerHTML = "";
-  for (let msg of state.chatHistory) {
-    const row = document.createElement("div");
-    row.className = "chat-row " + (msg.from === "you" ? "you" : "oc");
-    const b = document.createElement("div");
-    b.className = "chat-bubble";
-    b.textContent = msg.text;
-    row.appendChild(b);
-    chatBody.appendChild(row);
-  }
-  chatBody.scrollTop = chatBody.scrollHeight;
-}
-
-/* 添加聊天 */
-function pushChat(from, text) {
-  state.chatHistory.push({ from, text });
-  saveState();
-  renderChat();
-}
-
-/* AI 回复 */
-function respondChat(text) {
-  let reply = "嗯。";
-  if (text.includes("忙") || text.includes("加班"))
-    reply = "能抽空回你消息，说明我还活着。";
-  else if (text.includes("摸鱼"))
-    reply = "理论上不提倡，实际上……看情况。";
-  else if (text.includes("累"))
-    reply = "那就先坐一会儿。";
-
-  chatStatus.textContent = "状态：回复中...";
-  setTimeout(() => {
-    pushChat("oc", reply);
-    chatStatus.textContent = "状态：桌宠在线";
-  }, 400);
-}
-
-/* 桌面行为 */
-function act(action) {
-  switch (action) {
-    case "pet":
-      changeStat("mood", +5);
-      dialogText.textContent = "……你在确认我是真的？";
-      break;
-    case "snack":
-      changeStat("mood", +8);
-      dialogText.textContent = "线上投喂也算吗……那我收下了。";
-      break;
-    case "remindWork":
-      changeStat("stress", +5);
-      changeStat("workload", -8);
-      dialogText.textContent = "……知道了，我会动的。";
-      break;
-    case "toggleDay":
-      toggleDayNight();
-      break;
-  }
-  saveState();
-  updateUI();
-}
-
-/* 任务行为 */
-function taskAct(action) {
-  if (action === "spawn") {
-    state.tasks++;
-    state.workload = clamp(state.workload + 10);
-    taskLog.textContent += "\n- 新任务已出现。";
-  }
-  if (action === "processOne") {
-    if (state.tasks > 0) {
-      state.tasks--;
-      state.workload = clamp(state.workload - 12);
-      taskLog.textContent += "\n- 处理了一项事务。";
-    }
-  }
-  if (action === "processBatch") {
-    const n = Math.min(3, state.tasks);
-    state.tasks -= n;
-    state.workload = clamp(state.workload - n * 8);
-    taskLog.textContent += `\n- 集中处理了 ${n} 项。`;
-  }
-  if (action === "ignore") {
-    state.workload = clamp(state.workload + 5);
-    taskLog.textContent += "\n- 假装看不见任务。";
-  }
-  saveState();
-  updateUI();
-}
-
-/* 昼夜切换 */
-function toggleDayNight() {
-  if (state.dayMode === "day") {
-    state.dayMode = "night";
-    deskBg.style.backgroundImage = "url('images/bg_desk_night.jpg')";
-    timeTag.textContent = "夜间模式";
-    modeTag.textContent = "可能在加班";
-  } else {
-    state.dayMode = "day";
-    deskBg.style.backgroundImage = "url('images/bg_desk_day.jpg')";
-    timeTag.textContent = "日间模式";
-    modeTag.textContent = "桌面在线";
-  }
-}
-
-/* UI 更新 */
-function updateUI() {
-  moodBar.style.width = state.mood + "%";
-  stressBar.style.width = state.stress + "%";
-  workloadBar.style.width = state.workload + "%";
-  moodText.textContent = state.mood + "/100";
-  stressText.textContent = state.stress + "/100";
-  workloadText.textContent = state.workload + "/100";
-
-  taskCount.textContent = state.tasks;
-
-  if (state.mood > 80 && state.stress < 35) {
-    spriteImg.src = "images/jth_stand_alt.png";
-  } else {
-    spriteImg.src = "images/jth_stand.png";
-  }
-}
-
-/* 工具 */
-function changeStat(key, delta) {
-  state[key] = clamp(state[key] + delta);
-}
-function clamp(v) {
-  return Math.max(0, Math.min(100, v));
-}
-function saveState() {
-  localStorage.setItem("jth_pet_state", JSON.stringify(state));
-}
-function loadState() {
-  const raw = localStorage.getItem("jth_pet_state");
-  return raw ? JSON.parse(raw) : structuredClone(DEFAULT_STATE);
-}
-
-/* 页面交互绑定 */
-
-/* 1. 标签页切换 */
-const tabButtons = document.querySelectorAll(".tab-btn");
-const panels = {
-  desk: document.getElementById("panel-desk"),
-  task: document.getElementById("panel-task"),
-  chat: document.getElementById("panel-chat")
-};
-
-tabButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    const tab = btn.dataset.tab;      // desk / task / chat
-
-    // 按钮高亮
-    tabButtons.forEach(b => {
-      b.classList.toggle("active", b === btn);
-    });
-
-    // 面板显示/隐藏
-    Object.keys(panels).forEach(key => {
-      panels[key].classList.toggle("active", key === tab);
+  tabButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab; // desk / task / chat
+      tabButtons.forEach(b => b.classList.toggle("active", b === btn));
+      Object.keys(panels).forEach(key => {
+        panels[key].classList.toggle("active", key === tab);
+      });
     });
   });
-});
 
-/* 2. 桌面按钮 */
-document.querySelectorAll(".action-card").forEach(btn => {
-  btn.onclick = () => act(btn.dataset.action);
-});
+  /* ---------- 行为绑定 ---------- */
+  document.querySelectorAll(".action-card").forEach(btn => {
+    btn.addEventListener("click", () => act(btn.dataset.action));
+  });
+  document.querySelectorAll(".task-btn").forEach(btn => {
+    btn.addEventListener("click", () => taskAct(btn.dataset.task));
+  });
+  document.getElementById("chatSendBtn").addEventListener("click", () => {
+    const text = chatPreset.value;
+    if (!text) return;
+    pushChat("you", text);
+    respondChat(text);
+  });
 
-/* 3. 任务按钮 */
-document.querySelectorAll(".task-btn").forEach(btn => {
-  btn.onclick = () => taskAct(btn.dataset.task);
-});
+  /* ---------- 行为逻辑：桌面 ---------- */
+  function act(action) {
+    switch (action) {
+      case "pet":
+        changeStat("mood", +5);
+        dialogText.textContent = "……你在确认我是真的？";
+        appendDeskLog("你轻轻点了点他的头发，他装作没看见。");
+        break;
+      case "snack":
+        changeStat("mood", +8);
+        changeStat("stress", -3);
+        dialogText.textContent = "线上投喂也算数？那我就当真的收下了。";
+        appendDeskLog("你在桌面角落摆了一杯虚构奶茶，他的表情明显放松了一点。");
+        break;
+      case "remindWork":
+        changeStat("stress", +5);
+        changeStat("workload", -10);
+        dialogText.textContent = "……知道了，我会动的。桌宠也有待办。";
+        appendDeskLog("你提醒他还有几件事务没处理，他默默点开了文档。");
+        break;
+      case "toggleDay":
+        toggleDayNight();
+        break;
+    }
+    saveState();
+    updateUI();
+  }
 
-/* 4. 聊天发送 */
-document.getElementById("chatSendBtn").onclick = () => {
-  const text = chatPreset.value;
-  pushChat("you", text);
-  respondChat(text);
-};
+  /* ---------- 行为逻辑：任务 ---------- */
+  function taskAct(action) {
+    switch (action) {
+      case "spawn":
+        state.tasks += 1;
+        changeStat("workload", +10);
+        appendTaskLog("新任务生成：某个主题行只有“在吗”的邮件。");
+        break;
+      case "processOne":
+        if (state.tasks > 0) {
+          state.tasks -= 1;
+          changeStat("workload", -12);
+          appendTaskLog("他认真处理了一项事务，列表上多了一条“已完成”。");
+        } else {
+          appendTaskLog("目前没有新的事务，他难得地空了下来。");
+        }
+        break;
+      case "processBatch":
+        if (state.tasks <= 0) {
+          appendTaskLog("没有可批量清理的待办。你还是点了这个按钮。");
+        } else {
+          const n = Math.min(3, state.tasks);
+          state.tasks -= n;
+          changeStat("workload", -8 * n);
+          changeStat("stress", +3);
+          appendTaskLog(`他开了清单模式，一口气解决了 ${n} 项。`);
+        }
+        break;
+      case "ignore":
+        changeStat("workload", +6);
+        appendTaskLog("你们默契地假装没看到待办。明天的他可能会后悔。");
+        break;
+    }
+    // 模式文案
+    if (state.workload > 70) taskMode.textContent = "堆积如山";
+    else if (state.workload > 40) taskMode.textContent = "适度忙碌";
+    else if (state.workload > 10) taskMode.textContent = "掌控之中";
+    else taskMode.textContent = "罕见清闲";
 
-/* 初始化 */
-initChat();
-updateUI();
+    saveState();
+    updateUI();
+  }
 
+  /* ---------- 昼夜切换 ---------- */
+  function toggleDayNight() {
+    if (state.dayMode === "day") {
+      state.dayMode = "night";
+      deskBg.style.backgroundImage = "url('images/bg_desk_night.jpg')";
+      timeTag.textContent = "夜间模式";
+      modeTag.textContent = "可能在加班";
+    } else {
+      state.dayMode = "day";
+      deskBg.style.backgroundImage = "url('images/bg_desk_day.jpg')";
+      timeTag.textContent = "日间模式";
+      modeTag.textContent = "桌面在线";
+    }
+    saveState();
+  }
+
+  /* ---------- 聊天 ---------- */
+  function initChat() {
+    if (!state.chatHistory.length) {
+      state.chatHistory = [
+        { from: "oc", text: "这里是桌面版的我。" },
+        { from: "oc", text: "有什么想处理的事务，或者单纯想摸鱼，可以在这边叫我。" }
+      ];
+      saveState();
+    }
+    renderChat();
+  }
+
+  function renderChat() {
+    chatBody.innerHTML = "";
+    state.chatHistory.forEach(msg => {
+      const row = document.createElement("div");
+      row.className = "chat-row " + (msg.from === "you" ? "you" : "oc");
+      const bubble = document.createElement("div");
+      bubble.className = "chat-bubble";
+      bubble.textContent = msg.text;
+      row.appendChild(bubble);
+      chatBody.appendChild(row);
+    });
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function pushChat(from, text) {
+    state.chatHistory.push({ from, text });
+    saveState();
+    renderChat();
+  }
+
+  function respondChat(text) {
+    let reply;
+    if (text.includes("忙") || text.includes("加班")) {
+      reply = "能抽空回你消息，说明我还活着。";
+      changeStat("stress", +1);
+    } else if (text.includes("摸鱼")) {
+      reply = "理论上不鼓励，实际上……看你良心。";
+      changeStat("mood", +3);
+    } else if (text.includes("累") || text.includes("休息")) {
+      reply = "那就先坐一会儿。我们都假装时间停一下。";
+      changeStat("mood", +4);
+      changeStat("stress", -3);
+    } else {
+      reply = "嗯，我在听。";
+    }
+    chatStatus.textContent = "状态：回复中…";
+    saveState();
+    setTimeout(() => {
+      pushChat("oc", reply);
+      chatStatus.textContent = "状态：桌宠在线";
+      saveState();
+      updateUI();
+    }, 400);
+  }
+
+  /* ---------- UI & 状态 ---------- */
+  function updateUI() {
+    moodBar.style.width = state.mood + "%";
+    stressBar.style.width = state.stress + "%";
+    workloadBar.style.width = state.workload + "%";
+    moodText.textContent = state.mood + "/100";
+    stressText.textContent = state.stress + "/100";
+    workloadText.textContent = state.workload + "/100";
+
+    deskLog.textContent = state.deskLog || "";
+    taskLog.textContent = state.taskLog || "";
+    taskCount.textContent = state.tasks;
+
+    if (state.dayMode === "day") {
+      deskBg.style.backgroundImage = "url('images/bg_desk_day.jpg')";
+      timeTag.textContent = "日间模式";
+      modeTag.textContent = "桌面在线";
+    } else {
+      deskBg.style.backgroundImage = "url('images/bg_desk_night.jpg')";
+      timeTag.textContent = "夜间模式";
+      modeTag.textContent = "可能在加班";
+    }
+
+    // 心情好 + 压力不高时切换立绘
+    if (state.mood > 80 && state.stress < 35) {
+      spriteImg.src = "images/jth_stand_alt.png";
+    } else {
+      spriteImg.src = "images/jth_stand.png";
+    }
+  }
+
+  function appendDeskLog(text) {
+    state.deskLog = (state.deskLog ? state.deskLog + "\n- " : "- ") + text;
+  }
+  function appendTaskLog(text) {
+    state.taskLog = (state.taskLog ? state.taskLog + "\n- " : "- ") + text;
+  }
+
+  function changeStat(key, delta) {
+    state[key] = clamp((state[key] ?? 0) + delta);
+  }
+  function clamp(v) { return Math.max(0, Math.min(100, v)); }
+
+  function saveState() {
+    localStorage.setItem("jth_pet_state_v2", JSON.stringify(state));
+  }
+  function loadState() {
+    try {
+      const raw = localStorage.getItem("jth_pet_state_v2");
+      return raw ? JSON.parse(raw) : structuredClone(DEFAULT_STATE);
+    } catch {
+      return structuredClone(DEFAULT_STATE);
+    }
+  }
+
+  /* ---------- 初始化 ---------- */
+  initChat();
+  updateUI();
 </script>
-
 </body>
-
 </html>
