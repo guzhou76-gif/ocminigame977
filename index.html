@@ -2,706 +2,1107 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>槿天华 · 小公司养成模拟器</title>
+  <title>槿天华桌宠模拟器</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --c-bg-deep: #3D3E49;
+      --c-bg-soft: #4a4b57;
+      --c-accent: #65272A;
+      --c-text-main: #C6C1C2;
+      --c-text-sub: #9B9EA6;
+      --c-border: #9B9EA6;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-soft: 0 16px 40px rgba(0,0,0,0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #020617;
-      color: #e5e7eb;
+      background: radial-gradient(circle at top, #3D3E49 0, #1e1f26 50%, #111117 100%);
+      color: var(--c-text-main);
       display: flex;
       justify-content: center;
       min-height: 100vh;
     }
 
-    .game-wrapper {
+    .app-shell {
       width: 100%;
-      max-width: 480px;
+      max-width: 820px;
       padding: 12px;
-    }
-
-    .card {
-      position: relative;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid rgba(148,163,184,0.6);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      background: radial-gradient(circle at 10% 0%, rgba(96,165,250,0.5) 0, transparent 55%),
-                  radial-gradient(circle at 90% 100%, rgba(244,114,182,0.4) 0, transparent 60%),
-                  #020617;
-    }
-
-    .bg-layer {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      opacity: 0.35;
-      filter: blur(4px);
-      transform: scale(1.05);
-    }
-
-    .content-layer {
-      position: relative;
-      padding: 10px;
-      backdrop-filter: blur(4px);
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-    .title {
-      font-size: 16px;
-      font-weight: 600;
-    }
-    .subtitle {
-      font-size: 11px;
-      color: #cbd5f5;
-    }
-
-    .badge-row {
-      display: flex;
-      gap: 6px;
-      margin-top: 2px;
-      flex-wrap: wrap;
-    }
-    .badge {
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.9);
-      background: rgba(15,23,42,0.8);
-      color: #e5e7eb;
-    }
-
-    .sprite-area {
-      margin-top: 6px;
-      border-radius: 14px;
-      background: rgba(15,23,42,0.8);
-      display: flex;
-      align-items: center;
-      padding: 6px;
-      gap: 8px;
-    }
-
-    .sprite-box {
-      width: 140px;
-      aspect-ratio: 3/4;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(148,163,184,0.7);
-      background: #020617;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .sprite-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
 
-    .stat-box {
-      flex: 1;
-      font-size: 12px;
-      color: #e5e7eb;
+    .game-card {
+      width: 100%;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, #3D3E49, #2a2b33);
+      border: 1px solid rgba(155,158,166,0.4);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 4px;
     }
 
-    .stat-row {
+    /* 顶部栏 */
+    .top-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 6px;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(198,193,194,0.3);
+      background: rgba(61,62,73,0.9);
     }
 
-    .stat-label {
-      font-size: 11px;
-      color: #cbd5f5;
-      white-space: nowrap;
-    }
-
-    .stat-bar {
-      flex: 1;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(15,23,42,0.9);
-      overflow: hidden;
-    }
-    .stat-bar-fill {
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #38bdf8, #a855f7);
-      width: 50%;
-      transition: width 0.2s ease-out;
-    }
-
-    .stat-value {
-      font-size: 11px;
-      width: 42px;
-      text-align: right;
-      color: #e5e7eb;
-    }
-
-    .money-favor {
-      display: flex;
-      gap: 6px;
-      font-size: 11px;
-      margin-top: 4px;
-    }
-    .pill {
-      flex: 1;
-      border-radius: 999px;
-      padding: 4px 8px;
-      border: 1px solid rgba(148,163,184,0.7);
-      background: rgba(15,23,42,0.9);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .tabs {
-      margin-top: 8px;
-      display: flex;
-      gap: 4px;
-      font-size: 11px;
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 6px 4px;
-      border-radius: 999px;
-      border: none;
-      background: rgba(15,23,42,0.85);
-      color: #e5e7eb;
-      cursor: pointer;
-      border: 1px solid transparent;
-    }
-    .tab-btn.active {
-      border-color: rgba(129,140,248,0.95);
-      background: rgba(30,64,175,0.9);
-    }
-
-    .panel {
-      margin-top: 8px;
-      font-size: 12px;
-      border-radius: 12px;
-      background: rgba(15,23,42,0.85);
-      padding: 8px;
-      min-height: 110px;
-    }
-
-    .actions-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 6px;
-    }
-    .action-btn {
-      border-radius: 10px;
-      border: 1px solid rgba(148,163,184,0.9);
-      background: rgba(15,23,42,0.95);
-      color: #e5e7eb;
-      padding: 6px;
-      text-align: left;
-      cursor: pointer;
-      font-size: 11px;
+    .top-info {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
-    .action-btn strong {
-      font-size: 12px;
+
+    .top-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
     }
-    .action-desc {
-      color: #9ca3af;
+
+    .top-sub {
+      font-size: 11px;
+      color: var(--c-text-sub);
+    }
+
+    .top-pills {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid rgba(198,193,194,0.4);
+      padding: 2px 10px;
+      font-size: 10px;
+      color: var(--c-text-sub);
+      background: rgba(33,34,42,0.7);
+    }
+
+    .pill-accent {
+      border-color: rgba(101,39,42,0.9);
+      color: #f0d9da;
+      background: rgba(101,39,42,0.9);
+    }
+
+    /* 主体布局：上半桌面，下半控制 */
+    .main-layout {
+      display: grid;
+      grid-template-rows: minmax(210px, 45vh) minmax(210px, 55vh);
+    }
+
+    @media (min-width: 900px) {
+      .main-layout {
+        grid-template-columns: minmax(340px, 1.2fr) minmax(320px, 1fr);
+        grid-template-rows: auto;
+      }
+      .desk-area-wrapper {
+        border-right: 1px solid rgba(198,193,194,0.35);
+      }
+    }
+
+    /* 桌面区域 */
+    .desk-area-wrapper {
+      position: relative;
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid rgba(198,193,194,0.35);
+    }
+
+    .desk-area {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #2a2b33;
+      height: 100%;
+      min-height: 210px;
+    }
+
+    .desk-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.6;
+      filter: blur(2px);
+      transform: scale(1.04);
+    }
+
+    .desk-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.2));
+    }
+
+    .desk-foreground {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 8px 10px 10px;
+    }
+
+    .sprite-lane {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      padding-bottom: 8px;
+    }
+
+    .sprite-hit-area {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .sprite {
+      position: absolute;
+      bottom: 0;
+      width: 120px;
+      max-width: 40%;
+      aspect-ratio: 3/5;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(198,193,194,0.5);
+      background: #3D3E49;
+      cursor: pointer;
+      animation: walk 12s ease-in-out infinite alternate;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transform-origin: center bottom;
+      transition: transform 0.15s ease-out, box-shadow 0.15s;
+    }
+
+    .sprite img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .sprite:active {
+      transform: scale(0.97) translateY(2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+    }
+
+    @keyframes walk {
+      0%   { left: 8%; }
+      50%  { left: 55%; }
+      100% { left: 26%; }
+    }
+
+    .desk-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
       font-size: 11px;
     }
 
-    .log {
+    .status-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .status-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 80px;
+    }
+
+    .status-label {
+      color: var(--c-text-sub);
+      font-size: 10px;
+    }
+
+    .status-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(24,25,33,0.9);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .status-bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 60%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--c-accent), #C6C1C2);
+      transition: width 0.2s ease-out;
+    }
+
+    .status-value {
       font-size: 11px;
-      color: #cbd5f5;
+      color: var(--c-text-main);
+    }
+
+    .desk-time-tag {
+      font-size: 10px;
+      color: var(--c-text-sub);
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(198,193,194,0.4);
+      background: rgba(24,25,33,0.9);
+      white-space: nowrap;
+    }
+
+    /* 对话框 */
+    .dialog-wrapper {
+      padding: 6px 12px 10px;
+    }
+
+    .dialog-box {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(198,193,194,0.45);
+      background: linear-gradient(135deg, rgba(61,62,73,0.95), rgba(33,34,42,0.95));
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 70px;
+    }
+
+    .dialog-name {
+      font-size: 11px;
+      color: var(--c-text-sub);
+    }
+
+    .dialog-text {
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* 控制区域：标签页 + 面板 */
+    .control-area {
+      padding: 6px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tabs-row {
+      display: flex;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      border-radius: 999px;
+      padding: 6px 8px;
+      border: none;
+      cursor: pointer;
+      background: rgba(33,34,42,0.9);
+      color: var(--c-text-sub);
+      border: 1px solid transparent;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .tab-btn.active {
+      background: rgba(101,39,42,0.95);
+      border-color: rgba(198,193,194,0.7);
+      color: #f5e9ea;
+    }
+
+    .panels {
+      position: relative;
+      flex: 1;
+      min-height: 170px;
+    }
+
+    .panel {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(198,193,194,0.35);
+      background: rgba(33,34,42,0.96);
+      padding: 8px;
+      font-size: 12px;
+      display: none;
+      height: 100%;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    /* 桌面面板：基础互动按钮 */
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .action-card {
+      border-radius: 10px;
+      border: 1px solid rgba(198,193,194,0.4);
+      background: rgba(37,38,47,0.95);
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
+    }
+
+    .action-card:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: none;
+      border-color: rgba(198,193,194,0.9);
+    }
+
+    .action-title {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .action-sub {
+      font-size: 11px;
+      color: var(--c-text-sub);
+    }
+
+    .small-log {
       margin-top: 4px;
-      max-height: 70px;
+      font-size: 11px;
+      color: var(--c-text-sub);
+      max-height: 60px;
       overflow-y: auto;
-      padding-right: 4px;
       white-space: pre-wrap;
     }
 
-    .gacha-top {
+    /* 任务面板：简单小游戏 */
+    .task-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 6px;
-    }
-    .gacha-cost {
       font-size: 11px;
-      color: #e5e7eb;
+      color: var(--c-text-sub);
     }
-    .gacha-btn {
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 12px;
-      border: none;
-      background: linear-gradient(90deg,#6366f1,#ec4899);
-      color: #f9fafb;
+
+    .task-label {
+      font-size: 11px;
+      color: var(--c-text-main);
+    }
+
+    .task-count {
+      font-weight: 500;
+      color: var(--c-text-main);
+    }
+
+    .task-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .task-btn {
+      border-radius: 10px;
+      border: 1px solid rgba(198,193,194,0.4);
+      background: rgba(37,38,47,0.95);
+      padding: 6px;
+      font-size: 11px;
       cursor: pointer;
+      text-align: left;
     }
 
-    .gacha-result {
-      font-size: 12px;
-      color: #e5e7eb;
-      margin-top: 4px;
-    }
-    .rarity-r {
-      color: #a5b4fc;
-    }
-    .rarity-sr {
-      color: #f97316;
-    }
-    .rarity-ssr {
-      color: #facc15;
-      text-shadow: 0 0 6px rgba(250,204,21,0.7);
-    }
-
-    .inventory-list {
-      margin-top: 6px;
+    .task-log {
       font-size: 11px;
-      color: #9ca3af;
-      max-height: 70px;
+      color: var(--c-text-sub);
+      max-height: 80px;
       overflow-y: auto;
+      white-space: pre-wrap;
     }
 
-    .footer {
-      margin-top: 4px;
+    /* 消息面板：模拟手机聊天 UI */
+    .chat-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #2c2d35;
+    }
+
+    .chat-top {
+      padding: 6px 8px;
+      background: #3D3E49;
+      border-bottom: 1px solid rgba(198,193,194,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .chat-name {
+      font-weight: 500;
+    }
+
+    .chat-tag {
       font-size: 10px;
-      color: #9ca3af;
+      color: var(--c-text-sub);
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 6px 6px 0;
+      overflow-y: auto;
+      background: #2f3039;
+    }
+
+    .chat-row {
+      display: flex;
+      margin-bottom: 4px;
+    }
+
+    .chat-row.you {
+      justify-content: flex-end;
+    }
+
+    .chat-bubble {
+      max-width: 80%;
+      padding: 5px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .chat-row.oc .chat-bubble {
+      border-bottom-left-radius: 3px;
+      background: #3D3E49;
+      color: var(--c-text-main);
+    }
+
+    .chat-row.you .chat-bubble {
+      border-bottom-right-radius: 3px;
+      background: #65272A;
+      color: #f5e9ea;
+    }
+
+    .chat-input-bar {
+      padding: 4px 6px;
+      border-top: 1px solid rgba(198,193,194,0.25);
+      background: #3D3E49;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .chat-preset {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(198,193,194,0.4);
+      background: #2a2b33;
+      color: var(--c-text-sub);
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+
+    .chat-send-btn {
+      border-radius: 999px;
+      border: none;
+      background: #65272A;
+      color: #f5e9ea;
+      font-size: 11px;
+      padding: 4px 10px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* 底部文案 */
+    .bottom-note {
+      padding: 4px 14px 10px;
+      font-size: 10px;
+      color: var(--c-text-sub);
       text-align: right;
+    }
+
+    /* 滚动条细节 */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(155,158,166,0.6);
+      border-radius: 999px;
     }
   </style>
 </head>
 <body>
-  <div class="game-wrapper">
-    <div class="card">
-      <!-- 背景图：这里先用占位路径，之后你换成自己的 -->
-      <div class="bg-layer" id="bgLayer"
-           style="background-image:url('images/bg_office_day.jpg');"></div>
+<div class="app-shell">
+  <div class="game-card">
+    <!-- 顶部栏 -->
+    <div class="top-bar">
+      <div class="top-info">
+        <div class="top-title">槿天华桌宠模拟器</div>
+        <div class="top-sub" id="topSub">桌面已联动，等待你的指派。</div>
+      </div>
+      <div class="top-pills">
+        <div class="pill">本地存档</div>
+        <div class="pill pill-accent" id="modeTag">桌面在线</div>
+      </div>
+    </div>
 
-      <div class="content-layer">
-        <!-- 顶部信息 -->
-        <div class="header">
-          <div>
-            <div class="title">槿天华的小公司日常</div>
-            <div class="subtitle">轻松办公 · 摸鱼养成 · 偶尔抽卡</div>
-            <div class="badge-row">
-              <div class="badge">桌宠 / 网页小游戏</div>
-              <div class="badge">本地存档 · 单机</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 角色区域 -->
-        <div class="sprite-area">
-          <div class="sprite-box">
-            <!-- 立绘占位：之后换成槿天华的图，如 images/jth_normal.png -->
-            <img id="spriteImg" src="images/jth_normal.png" alt="槿天华">
-          </div>
-          <div class="stat-box">
-            <div class="stat-row">
-              <div class="stat-label">心情 Mood</div>
-              <div class="stat-bar"><div id="moodBar" class="stat-bar-fill"></div></div>
-              <div id="moodText" class="stat-value"></div>
-            </div>
-            <div class="stat-row">
-              <div class="stat-label">精力 Energy</div>
-              <div class="stat-bar"><div id="energyBar" class="stat-bar-fill"></div></div>
-              <div id="energyText" class="stat-value"></div>
-            </div>
-            <div class="stat-row">
-              <div class="stat-label">好感 Favor</div>
-              <div class="stat-bar"><div id="favorBar" class="stat-bar-fill"></div></div>
-              <div id="favorText" class="stat-value"></div>
-            </div>
-            <div class="money-favor">
-              <div class="pill">
-                <span>公司资金</span>
-                <span id="moneyText">¥0</span>
+    <div class="main-layout">
+      <!-- 左 / 上：桌面 + 对话 -->
+      <div>
+        <!-- 桌面区域 -->
+        <div class="desk-area-wrapper">
+          <div class="desk-area">
+            <div class="desk-bg" id="deskBg"
+                 style="background-image:url('images/bg_desk_day.jpg');"></div>
+            <div class="desk-overlay"></div>
+            <div class="desk-foreground">
+              <div class="sprite-lane">
+                <div class="sprite-hit-area">
+                  <div class="sprite" id="sprite">
+                    <img id="spriteImg" src="images/jth_stand.png" alt="槿天华">
+                  </div>
+                </div>
               </div>
-              <div class="pill">
-                <span>今日标签</span>
-                <span id="statusTag">初始上班日</span>
+              <div class="desk-status-row">
+                <div class="status-group">
+                  <div class="status-item">
+                    <div class="status-label">心情</div>
+                    <div class="status-bar">
+                      <div class="status-bar-fill" id="moodBar"></div>
+                    </div>
+                    <div class="status-value" id="moodText"></div>
+                  </div>
+                  <div class="status-item">
+                    <div class="status-label">压力</div>
+                    <div class="status-bar">
+                      <div class="status-bar-fill" id="stressBar"></div>
+                    </div>
+                    <div class="status-value" id="stressText"></div>
+                  </div>
+                  <div class="status-item">
+                    <div class="status-label">未处理事务</div>
+                    <div class="status-bar">
+                      <div class="status-bar-fill" id="workloadBar"></div>
+                    </div>
+                    <div class="status-value" id="workloadText"></div>
+                  </div>
+                </div>
+                <div class="desk-time-tag" id="timeTag">日间模式</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 选项卡 -->
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="daily">日常</button>
-          <button class="tab-btn" data-tab="work">工作</button>
-          <button class="tab-btn" data-tab="gacha">抽卡</button>
-        </div>
-
-        <!-- 面板：日常 -->
-        <div class="panel" id="panel-daily">
-          <div class="actions-grid">
-            <button class="action-btn" data-action="chat">
-              <strong>聊聊天</strong>
-              <div class="action-desc">和槿天华随便说说今天的破事。</div>
-            </button>
-            <button class="action-btn" data-action="relax">
-              <strong>摸鱼休息</strong>
-              <div class="action-desc">刷手机 / 看猫片，恢复心情与精力。</div>
-            </button>
-            <button class="action-btn" data-action="coffee">
-              <strong>咖啡续命</strong>
-              <div class="action-desc">精力回一点，心情看咖啡味道。</div>
-            </button>
-            <button class="action-btn" data-action="night">
-              <strong>切换昼夜</strong>
-              <div class="action-desc">换个背景图，假装是加班还是下班。</div>
-            </button>
-          </div>
-          <div class="log" id="logBox"></div>
-        </div>
-
-        <!-- 面板：工作 -->
-        <div class="panel" id="panel-work" style="display:none;">
-          <div class="actions-grid">
-            <button class="action-btn" data-action="workHard">
-              <strong>认真工作</strong>
-              <div class="action-desc">赚更多钱，但会掉不少精力和心情。</div>
-            </button>
-            <button class="action-btn" data-action="lightWork">
-              <strong>划水办公</strong>
-              <div class="action-desc">赚少一点钱，但没那么累。</div>
-            </button>
-            <button class="action-btn" data-action="report">
-              <strong>写周报</strong>
-              <div class="action-desc">好感略涨，心情略降（经典矛盾）。</div>
-            </button>
-            <button class="action-btn" data-action="meeting">
-              <strong>开会</strong>
-              <div class="action-desc">随机事件：有时涨好感，有时全员-心情。</div>
-            </button>
-          </div>
-          <div class="log" id="workLogBox"></div>
-        </div>
-
-        <!-- 面板：抽卡 -->
-        <div class="panel" id="panel-gacha" style="display:none;">
-          <div class="gacha-top">
-            <div class="gacha-cost">单抽：¥50，公司资金不足将无法抽卡</div>
-            <button class="gacha-btn" id="gachaBtn">单抽 x1</button>
-          </div>
-          <div id="gachaResult" class="gacha-result">还没有抽到任何东西。</div>
-          <div class="inventory-list" id="inventoryList">
-            当前持有：暂无卡片。
+        <!-- 对话框 -->
+        <div class="dialog-wrapper">
+          <div class="dialog-box">
+            <div class="dialog-name" id="dialogName">槿天华</div>
+            <div class="dialog-text" id="dialogText">
+……刚刚被塞进这个屏幕里的是我。暂时借用一下你的桌面，麻烦多关照。
+            </div>
           </div>
         </div>
+      </div>
 
-        <div class="footer">
-          本地存档 · 关闭页面数据不会丢失
+      <!-- 右 / 下：控制区 -->
+      <div class="control-area">
+        <!-- 标签页 -->
+        <div class="tabs-row">
+          <button class="tab-btn active" data-tab="desk">桌面</button>
+          <button class="tab-btn" data-tab="task">任务</button>
+          <button class="tab-btn" data-tab="chat">消息</button>
+        </div>
+
+        <!-- 面板内容 -->
+        <div class="panels">
+          <!-- 桌面互动 -->
+          <div class="panel active" id="panel-desk">
+            <div class="actions-grid">
+              <div class="action-card" data-action="pet">
+                <div class="action-title">摸头 / 点他</div>
+                <div class="action-sub">确认屏幕里的人不是幻觉。</div>
+              </div>
+              <div class="action-card" data-action="snack">
+                <div class="action-title">投喂零食</div>
+                <div class="action-sub">据说加班桌宠靠糖分存活。</div>
+              </div>
+              <div class="action-card" data-action="remindWork">
+                <div class="action-title">提醒工作</div>
+                <div class="action-sub">“你不是还有待办没写吗？”</div>
+              </div>
+              <div class="action-card" data-action="toggleDay">
+                <div class="action-title">切换昼夜</div>
+                <div class="action-sub">看一眼他加班 / 下班的样子。</div>
+              </div>
+            </div>
+            <div class="small-log" id="deskLog"></div>
+          </div>
+
+          <!-- 任务小游戏 -->
+          <div class="panel" id="panel-task">
+            <div class="task-header">
+              <div class="task-label">未处理事务：<span class="task-count" id="taskCount">0</span></div>
+              <div class="task-label">今日模式：<span id="taskMode">正常工作日</span></div>
+            </div>
+            <div class="task-buttons">
+              <button class="task-btn" data-task="spawn">
+                生成新任务<br>
+                <span style="color:var(--c-text-sub);">随机来一封邮件 / 一份报表 / 一个电话。</span>
+              </button>
+              <button class="task-btn" data-task="processOne">
+                处理一项<br>
+                <span style="color:var(--c-text-sub);">认真处理一条，压力略有波动。</span>
+              </button>
+              <button class="task-btn" data-task="processBatch">
+                集中清理<br>
+                <span style="color:var(--c-text-sub);">开“清单模式”，一次解决一堆。</span>
+              </button>
+              <button class="task-btn" data-task="ignore">
+                假装没看到<br>
+                <span style="color:var(--c-text-sub);">“先放着吧。”——危险发言。</span>
+              </button>
+            </div>
+            <div class="task-log" id="taskLog"></div>
+          </div>
+
+          <!-- 消息：模拟聊天 -->
+          <div class="panel" id="panel-chat">
+            <div class="chat-shell">
+              <div class="chat-top">
+                <div>
+                  <div class="chat-name">槿天华</div>
+                  <div class="chat-tag" id="chatStatus">状态：桌宠在线</div>
+                </div>
+                <div class="pill" style="padding:2px 8px;">伪·聊天界面</div>
+              </div>
+              <div class="chat-body" id="chatBody">
+                <!-- 初始几条消息 -->
+              </div>
+              <div class="chat-input-bar">
+                <select class="chat-preset" id="chatPreset">
+                  <option value="忙吗">现在忙吗？</option>
+                  <option value="加班">你今天会加班到几点？</option>
+                  <option value="摸鱼">允许摸鱼五分钟吗？</option>
+                  <option value="鼓励">好累的话可以休息一下。</option>
+                </select>
+                <button class="chat-send-btn" id="chatSendBtn">发送</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-note">
+          数据存储于本地浏览器，不会上传到服务器。
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    // —— 游戏状态（会存到 localStorage） ——
-    const DEFAULT_STATE = {
-      mood: 70,
-      energy: 70,
-      favor: 30,
-      money: 200,
-      dayMode: "day", // day / night
-      statusTag: "初始上班日",
-      inventory: [] // 存抽卡获得的id
-    };
+<script>
+  // —— 游戏状态（本地存档） ——
+  const DEFAULT_STATE = {
+    mood: 70,
+    stress: 40,
+    workload: 20,
+    dayMode: "day",
+    deskLog: "",
+    taskLog: "",
+    tasks: 3,
+    chatHistory: []
+  };
 
-    let state = loadState();
+  let state = loadState();
 
-    // —— 抽卡卡池设定（你可以之后改成更贴合槿天华的） ——
-    const GACHA_POOL = [
-      { id: "desk_cat",   name: "桌上路过的小猫",         rarity: "R",   type: "event", desc: "心情+5，今天办公区突然多了一只猫。" },
-      { id: "milk_tea",   name: "加珍珠奶茶券",           rarity: "R",   type: "item",  desc: "解锁特别摸鱼台词。（只是设定文案）" },
-      { id: "rainy_bg",   name: "雨天窗边背景",           rarity: "SR",  type: "bg",    desc: "解锁一种新的背景氛围。" },
-      { id: "chibi_skin", name: "Q版槿天华立绘",         rarity: "SR",  type: "skin",  desc: "可以切换成Q版形象显示。" },
-      { id: "ssr_event",  name: "SS级甲方表扬邮件",       rarity: "SSR", type: "event", desc: "心情+20，钱+100，但总感觉哪儿不太对劲。" }
-    ];
+  // —— DOM 引用 ——
+  const moodBar = document.getElementById("moodBar");
+  const moodText = document.getElementById("moodText");
+  const stressBar = document.getElementById("stressBar");
+  const stressText = document.getElementById("stressText");
+  const workloadBar = document.getElementById("workloadBar");
+  const workloadText = document.getElementById("workloadText");
+  const timeTag = document.getElementById("timeTag");
+  const modeTag = document.getElementById("modeTag");
+  const topSub = document.getElementById("topSub");
+  const deskBg = document.getElementById("deskBg");
+  const sprite = document.getElementById("sprite");
+  const spriteImg = document.getElementById("spriteImg");
 
-    // —— DOM 元素引用 ——
-    const moodBar    = document.getElementById("moodBar");
-    const moodText   = document.getElementById("moodText");
-    const energyBar  = document.getElementById("energyBar");
-    const energyText = document.getElementById("energyText");
-    const favorBar   = document.getElementById("favorBar");
-    const favorText  = document.getElementById("favorText");
-    const moneyText  = document.getElementById("moneyText");
-    const statusTag  = document.getElementById("statusTag");
-    const spriteImg  = document.getElementById("spriteImg");
-    const bgLayer    = document.getElementById("bgLayer");
+  const dialogName = document.getElementById("dialogName");
+  const dialogText = document.getElementById("dialogText");
 
-    const logBox      = document.getElementById("logBox");
-    const workLogBox  = document.getElementById("workLogBox");
-    const gachaBtn    = document.getElementById("gachaBtn");
-    const gachaResult = document.getElementById("gachaResult");
-    const inventoryList = document.getElementById("inventoryList");
+  const deskLog = document.getElementById("deskLog");
+  const taskLog = document.getElementById("taskLog");
+  const taskCount = document.getElementById("taskCount");
+  const taskMode = document.getElementById("taskMode");
 
-    const tabButtons = document.querySelectorAll(".tab-btn");
-    const panels = {
-      daily: document.getElementById("panel-daily"),
-      work: document.getElementById("panel-work"),
-      gacha: document.getElementById("panel-gacha")
-    };
+  const tabBtns = document.querySelectorAll(".tab-btn");
+  const panels = {
+    desk: document.getElementById("panel-desk"),
+    task: document.getElementById("panel-task"),
+    chat: document.getElementById("panel-chat")
+  };
 
-    // —— 初始化 UI ——
+  const chatBody = document.getElementById("chatBody");
+  const chatPreset = document.getElementById("chatPreset");
+  const chatSendBtn = document.getElementById("chatSendBtn");
+  const chatStatus = document.getElementById("chatStatus");
+
+  // ——— 初始化 ———
+  initChatHistory();
+  updateAllUI();
+
+  // —— 标签页切换 ——
+  tabBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab;
+      tabBtns.forEach(b => b.classList.toggle("active", b === btn));
+      Object.keys(panels).forEach(key => {
+        panels[key].classList.toggle("active", key === tab);
+      });
+    });
+  });
+
+  // —— 桌面行为按钮 ——
+  document.querySelectorAll(".action-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const action = card.dataset.action;
+      handleDeskAction(action);
+    });
+  });
+
+  // —— 任务小游戏按钮 ——
+  document.querySelectorAll(".task-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const action = btn.dataset.task;
+      handleTaskAction(action);
+    });
+  });
+
+  // —— 点击立绘触发互动 ——
+  sprite.addEventListener("click", () => {
+    handleSpriteClick();
+  });
+
+  // —— 聊天发送按钮 ——
+  chatSendBtn.addEventListener("click", () => {
+    const text = chatPreset.value;
+    if (!text) return;
+    pushChat("you", text);
+    respondChat(text);
+    saveState();
+  });
+
+  // —— 行为逻辑：桌面 —— 
+  function handleDeskAction(action) {
+    switch (action) {
+      case "pet":
+        changeStat("mood", +6);
+        changeStat("stress", -2);
+        speak("槿天华", "……你刚刚是在确认我是真的，还是单纯手痒？");
+        appendDeskLog("你伸手在屏幕上点了点他的头发，他沉默了两秒，选择装作没看见。");
+        break;
+      case "snack":
+        changeStat("mood", +10);
+        changeStat("stress", -3);
+        speak("槿天华", "线上投喂也算数？那我就当真的收下了。");
+        appendDeskLog("你在桌面角落放了一杯虚构奶茶和一块点心，他看了两眼，眼底情绪明显好了不少。");
+        break;
+      case "remindWork":
+        changeStat("stress", +6);
+        changeStat("workload", -5);
+        speak("槿天华", "……知道了知道了，我会动的。桌宠也是会被催促的。");
+        appendDeskLog("你提醒他还有几件事务没处理，他沉默地打开了虚拟文档。");
+        break;
+      case "toggleDay":
+        toggleDayNight();
+        break;
+    }
+    saveState();
     updateAllUI();
-    updateInventoryList();
-    updateSpriteByInventory();
+  }
 
-    // —— tab 切换 ——
-    tabButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const tab = btn.dataset.tab;
-        tabButtons.forEach(b => b.classList.toggle("active", b === btn));
-        Object.keys(panels).forEach(key => {
-          panels[key].style.display = (key === tab) ? "block" : "none";
-        });
-      });
+  // —— 行为逻辑：点击立绘 —— 
+  function handleSpriteClick() {
+    const r = Math.random();
+    if (r < 0.35) {
+      changeStat("mood", +4);
+      speak("槿天华", "……别戳了，我会习惯的。可能吧。");
+      appendDeskLog("你点了他一下，他反应不大，只是顺手把领带理了理。");
+    } else if (r < 0.7) {
+      changeStat("stress", -3);
+      speak("槿天华", "看我干嘛，待办在那边。要一起解决吗？");
+      appendDeskLog("他抬眼看你一眼，又低头继续处理什么。好像压力小了一点。");
+    } else {
+      changeStat("mood", +2);
+      changeStat("workload", +2);
+      speak("槿天华", "如果你一直盯着我看，今天的工作可能真的做不完。");
+      appendDeskLog("你们互相对视了几秒，谁都没动。待办列表在角落里静静增长。");
+    }
+    saveState();
+    updateAllUI();
+  }
+
+  // —— 行为逻辑：任务小游戏 —— 
+  function handleTaskAction(action) {
+    switch (action) {
+      case "spawn":
+        state.workload = clamp(state.workload + 8, 0, 100);
+        state.tasks += 1;
+        const newTaskText = randomFrom([
+          "新邮件：主题行只有“在吗？”。",
+          "被抄送进一串毫无背景说明的讨论。",
+          "系统自动生成了一份周报草稿，看上去一团乱。",
+          "电话响了三声挂断，留下一条“稍后回拨”。"
+        ]);
+        appendTaskLog("生成任务：" + newTaskText);
+        break;
+      case "processOne":
+        if (state.tasks <= 0) {
+          appendTaskLog("目前没有新的事务，他正难得地空了下来。");
+          break;
+        }
+        state.tasks -= 1;
+        changeStat("workload", -10);
+        changeStat("stress", +2);
+        changeStat("mood", rSign() > 0 ? +2 : -1);
+        appendTaskLog("他认真处理了一项事务，屏幕上多了一个“已完成”的小勾。");
+        break;
+      case "processBatch":
+        if (state.tasks <= 0) {
+          appendTaskLog("没有可清理的待办，你却点了“批量处理”。有点危险。");
+          changeStat("stress", +1);
+          break;
+        }
+        const cleared = Math.min(state.tasks, 3);
+        state.tasks -= cleared;
+        changeStat("workload", - 8 * cleared);
+        changeStat("stress", +4);
+        changeStat("mood", -2);
+        appendTaskLog(`开启集中清理，连处理了 ${cleared} 项事务。他揉了揉眉心。`);
+        break;
+      case "ignore":
+        changeStat("workload", +6);
+        changeStat("mood", +1);
+        appendTaskLog("你和他默契地把待办推到明天的自己身上。明天大概会后悔。");
+        break;
+    }
+
+    // 更新“今日模式”提示
+    if (state.workload > 70) {
+      taskMode.textContent = "堆积如山";
+    } else if (state.workload > 40) {
+      taskMode.textContent = "适度忙碌";
+    } else if (state.workload > 10) {
+      taskMode.textContent = "掌控之中";
+    } else {
+      taskMode.textContent = "罕见清闲";
+    }
+
+    saveState();
+    updateAllUI();
+  }
+
+  // —— 昼夜切换 —— 
+  function toggleDayNight() {
+    if (state.dayMode === "day") {
+      state.dayMode = "night";
+      deskBg.style.backgroundImage = "url('images/bg_desk_night.jpg')";
+      timeTag.textContent = "夜间模式";
+      modeTag.textContent = "可能在加班";
+      topSub.textContent = "光线有点暗，他似乎还没打算下线。";
+    } else {
+      state.dayMode = "day";
+      deskBg.style.backgroundImage = "url('images/bg_desk_day.jpg')";
+      timeTag.textContent = "日间模式";
+      modeTag.textContent = "桌面在线";
+      topSub.textContent = "桌面已联动，等待你的指派。";
+    }
+  }
+
+  // —— 聊天逻辑 —— 
+  function initChatHistory() {
+    if (!state.chatHistory || state.chatHistory.length === 0) {
+      state.chatHistory = [
+        { from: "oc", text: "这里是“槿天华·桌面版”。" },
+        { from: "oc", text: "如果有需要处理的事务，或者单纯想摸鱼，可以在这边叫我。" }
+      ];
+    }
+    renderChat();
+    saveState();
+  }
+
+  function pushChat(from, text) {
+    state.chatHistory.push({ from, text });
+    renderChat();
+  }
+
+  function renderChat() {
+    chatBody.innerHTML = "";
+    state.chatHistory.forEach(msg => {
+      const row = document.createElement("div");
+      row.className = "chat-row " + (msg.from === "you" ? "you" : "oc");
+      const bubble = document.createElement("div");
+      bubble.className = "chat-bubble";
+      bubble.textContent = msg.text;
+      row.appendChild(bubble);
+      chatBody.appendChild(row);
     });
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
 
-    // —— 日常 & 工作按钮处理 ——
-    document.querySelectorAll(".action-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const action = btn.dataset.action;
-        handleAction(action);
-      });
-    });
-
-    // —— 抽卡按钮 ——
-    gachaBtn.addEventListener("click", handleGacha);
-
-    // —— 处理各种操作 —— 
-    function handleAction(action) {
-      switch (action) {
-        case "chat":
-          changeStat("mood", +5);
-          changeStat("favor", +3);
-          appendLog(logBox, "你和槿天华聊了会天，他吐槽了两句职场，心情似乎好了一点。");
-          setStatus("普通对话日");
-          break;
-        case "relax":
-          changeStat("mood", +8);
-          changeStat("energy", +5);
-          changeStat("money", -5);
-          appendLog(logBox, "你们一起摸鱼刷短视频，时间被吃掉了一点，公司资金小幅缩水。");
-          setStatus("摸鱼进行中");
-          break;
-        case "coffee":
-          changeStat("energy", +10);
-          // 心情随机上下
-          const moodDelta = (Math.random() < 0.7) ? +3 : -2;
-          changeStat("mood", moodDelta);
-          appendLog(logBox, `咖啡续命完成，精力+10，心情${moodDelta >= 0 ? "+" + moodDelta : moodDelta}。`);
-          setStatus("咖啡时间");
-          break;
-        case "night":
-          toggleDayNight();
-          break;
-        case "workHard":
-          changeStat("money", +40);
-          changeStat("energy", -15);
-          changeStat("mood", -10);
-          appendLog(workLogBox, "槿天华认真加班了一大轮，项目推进飞快，但精神状态略显危险。");
-          setStatus("高强度加班日");
-          break;
-        case "lightWork":
-          changeStat("money", +20);
-          changeStat("energy", -8);
-          changeStat("mood", -3);
-          appendLog(workLogBox, "今天以划水为主，偶尔认真，勉强算完成 KPI。");
-          setStatus("安全摸鱼日");
-          break;
-        case "report":
-          changeStat("favor", +5);
-          changeStat("mood", -4);
-          appendLog(workLogBox, "你帮忙润色了周报，他看起来有点感动，不过想到周一早会又略微崩溃。");
-          setStatus("周报战士");
-          break;
-        case "meeting":
-          const good = Math.random() < 0.5;
-          if (good) {
-            changeStat("mood", +6);
-            changeStat("favor", +4);
-            appendLog(workLogBox, "会议出奇地顺利，甲方没有乱提需求，堪称奇迹。");
-            setStatus("会议奇迹日");
-          } else {
-            changeStat("mood", -10);
-            changeStat("energy", -6);
-            appendLog(workLogBox, "会议开成了吐槽大会和需求炸弹现场，所有人心情-10。");
-            setStatus("会议灾难日");
-          }
-          break;
-        default:
-          break;
-      }
+  function respondChat(text) {
+    let reply;
+    if (text.includes("忙") || text.includes("加班")) {
+      reply = randomFrom([
+        "忙是忙，不过还能回你消息，说明还活着。",
+        "大概会加到你想睡觉的时间之后一点。",
+        "手上的活不少，但和你聊两句问题不大。"
+      ]);
+      changeStat("stress", +1);
+    } else if (text.includes("摸鱼")) {
+      reply = randomFrom([
+        "理论上不提倡，实际上我已经在摸了。",
+        "允许五分钟。第六分钟开始会有罪恶感。",
+        "你先摸，我负责在时间到了提醒你。"
+      ]);
+      changeStat("mood", +3);
+    } else if (text.includes("累") || text.includes("休息")) {
+      reply = randomFrom([
+        "你倒是比我更会照顾人。",
+        "好，那我们一起坐一会儿，什么都不做。",
+        "收到，那就宣布：接下来五分钟谁都不许提工作。"
+      ]);
+      changeStat("mood", +4);
+      changeStat("stress", -3);
+    } else {
+      reply = randomFrom([
+        "收到。",
+        "我在。",
+        "嗯。我听着。"
+      ]);
+    }
+    chatStatus.textContent = "状态：回复中";
+    saveState();
+    setTimeout(() => {
+      pushChat("oc", reply);
+      chatStatus.textContent = "状态：桌宠在线";
       saveState();
       updateAllUI();
+    }, 400);
+  }
+
+  // —— UI 更新 —— 
+  function updateAllUI() {
+    // 属性条
+    moodBar.style.width = state.mood + "%";
+    stressBar.style.width = state.stress + "%";
+    workloadBar.style.width = state.workload + "%";
+
+    moodText.textContent = state.mood + "/100";
+    stressText.textContent = state.stress + "/100";
+    workloadText.textContent = state.workload + "/100";
+
+    // 日夜状态
+    if (state.dayMode === "day") {
+      deskBg.style.backgroundImage = "url('images/bg_desk_day.jpg')";
+      timeTag.textContent = "日间模式";
+      modeTag.textContent = "桌面在线";
+    } else {
+      deskBg.style.backgroundImage = "url('images/bg_desk_night.jpg')";
+      timeTag.textContent = "夜间模式";
+      modeTag.textContent = "可能在加班";
     }
 
-    function toggleDayNight() {
-      if (state.dayMode === "day") {
-        state.dayMode = "night";
-        bgLayer.style.backgroundImage = "url('images/bg_office_night.jpg')";
-        appendLog(logBox, "灯光暗了下来，办公室变成夜间模式。加班の气息。");
-        setStatus("夜间办公");
-      } else {
-        state.dayMode = "day";
-        bgLayer.style.backgroundImage = "url('images/bg_office_day.jpg')";
-        appendLog(logBox, "窗外亮了起来，仿佛一切都还来得及。");
-        setStatus("白天工作");
-      }
-      saveState();
+    // 日志
+    deskLog.textContent = state.deskLog || "";
+    taskLog.textContent = state.taskLog || "";
+    taskCount.textContent = state.tasks;
+
+    // 立绘可以根据心情/压力切换为另一张图（如果你有）
+    if (state.mood > 80 && state.stress < 40) {
+      spriteImg.src = "images/jth_stand_alt.png"; // 可选：愉快/放松版
+    } else {
+      spriteImg.src = "images/jth_stand.png";
     }
+  }
 
-    // —— 抽卡逻辑 —— 
-    function handleGacha() {
-      const cost = 50;
-      if (state.money < cost) {
-        gachaResult.textContent = "资金不足，槿天华看了看账本，摇头叹气。";
-        return;
-      }
-      state.money -= cost;
+  // —— 文本、日志、状态工具 —— 
+  function speak(name, text) {
+    dialogName.textContent = name;
+    dialogText.textContent = text;
+  }
 
-      // 简单概率：SSR 5%，SR 20%，R 75%
-      const rand = Math.random();
-      let rarity;
-      if (rand < 0.05) rarity = "SSR";
-      else if (rand < 0.25) rarity = "SR";
-      else rarity = "R";
-
-      const candidates = GACHA_POOL.filter(c => c.rarity === rarity);
-      const picked = candidates[Math.floor(Math.random() * candidates.length)];
-
-      if (!state.inventory.includes(picked.id)) {
-        state.inventory.push(picked.id);
-      }
-
-      let rarityClass = "rarity-r";
-      if (rarity === "SR") rarityClass = "rarity-sr";
-      if (rarity === "SSR") rarityClass = "rarity-ssr";
-
-      gachaResult.innerHTML =
-        `抽到卡片：<span class="${rarityClass}">[${rarity}] ${picked.name}</span><br>${picked.desc}`;
-
-      setStatus("抽卡成瘾中");
-      appendLog(logBox, `抽到了：${picked.name} (${rarity})`);
-
-      updateInventoryList();
-      updateSpriteByInventory();
-      saveState();
-      updateAllUI();
+  function appendDeskLog(text) {
+    const line = "- " + text;
+    if (!state.deskLog) {
+      state.deskLog = line;
+    } else {
+      state.deskLog = state.deskLog + "\n" + line;
     }
+  }
 
-    function updateInventoryList() {
-      if (!state.inventory || state.inventory.length === 0) {
-        inventoryList.textContent = "当前持有：暂无卡片。";
-        return;
-      }
-      const lines = state.inventory.map(id => {
-        const card = GACHA_POOL.find(c => c.id === id);
-        if (!card) return id;
-        return `[${card.rarity}] ${card.name}`;
-      });
-      inventoryList.textContent = "当前持有：\n" + lines.join("\n");
+  function appendTaskLog(text) {
+    const line = "- " + text;
+    if (!state.taskLog) {
+      state.taskLog = line;
+    } else {
+      state.taskLog = state.taskLog + "\n" + line;
     }
+  }
 
-    function updateSpriteByInventory() {
-      // 如果抽到 chibi_skin，就换立绘（前提是你有对应的图片）
-      if (state.inventory.includes("chibi_skin")) {
-        spriteImg.src = "images/jth_chibi.png"; // 之后放你自己的Q版图
-      } else {
-        spriteImg.src = "images/jth_normal.png";
-      }
+  // —— 通用工具 —— 
+  function clamp(v, min, max) {
+    return Math.max(min, Math.min(max, v));
+  }
 
-      // 根据背景卡切换氛围（你也可以扩展）
-      if (state.inventory.includes("rainy_bg") && state.dayMode === "day") {
-        bgLayer.style.backgroundImage = "url('images/bg_office_rainy.jpg')";
-      } else {
-        bgLayer.style.backgroundImage =
-          state.dayMode === "day"
-            ? "url('images/bg_office_day.jpg')"
-            : "url('images/bg_office_night.jpg')";
-      }
+  function changeStat(key, delta) {
+    if (!(key in state)) return;
+    if (key === "workload" || key === "mood" || key === "stress") {
+      state[key] = clamp(state[key] + delta, 0, 100);
     }
+  }
 
-    // —— 通用工具函数 —— 
-    function clamp(v, min, max) {
-      return Math.max(min, Math.min(max, v));
+  function randomFrom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function rSign() {
+    return Math.random() < 0.5 ? -1 : 1;
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem("jth_pet_state");
+      if (!raw) return { ...DEFAULT_STATE };
+      const parsed = JSON.parse(raw);
+      return { ...DEFAULT_STATE, ...parsed };
+    } catch (e) {
+      return { ...DEFAULT_STATE };
     }
+  }
 
-    function changeStat(key, delta) {
-      if (!(key in state)) return;
-      if (key === "money") {
-        state.money = Math.max(0, state.money + delta);
-      } else {
-        state[key] = clamp(state[key] + delta, 0, 100);
-      }
-    }
-
-    function setStatus(text) {
-      state.statusTag = text;
-    }
-
-    function appendLog(box, text) {
-      const now = new Date();
-      const time = now.toTimeString().slice(0,5);
-      const line = `[${time}] ${text}`;
-      if (!box.textContent) {
-        box.textContent = line;
-      } else {
-        box.textContent = box.textContent + "\n" + line;
-      }
-      box.scrollTop = box.scrollHeight;
-    }
-
-    function updateAllUI() {
-      moodBar.style.width   = state.mood   + "%";
-      energyBar.style.width = state.energy + "%";
-      favorBar.style.width  = state.favor  + "%";
-
-      moodText.textContent   = state.mood   + "/100";
-      energyText.textContent = state.energy + "/100";
-      favorText.textContent  = state.favor  + "/100";
-
-      moneyText.textContent = "¥" + state.money;
-      statusTag.textContent = state.statusTag;
-
-      // 确认背景跟状态一致
-      updateSpriteByInventory();
-    }
-
-    function loadState() {
-      try {
-        const raw = localStorage.getItem("jth_company_state");
-        if (!raw) return { ...DEFAULT_STATE };
-        const parsed = JSON.parse(raw);
-        return { ...DEFAULT_STATE, ...parsed };
-      } catch (e) {
-        return { ...DEFAULT_STATE };
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem("jth_company_state", JSON.stringify(state));
-    }
-  </script>
+  function saveState() {
+    localStorage.setItem("jth_pet_state", JSON.stringify(state));
+  }
+</script>
 </body>
 </html>
