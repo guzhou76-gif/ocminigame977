@@ -116,7 +116,7 @@
       overflow: hidden;
       background: #2a2b33;
       height: 100%;
-      min-height: 320px; /* 加高容器，保证整个人能露出来 */
+      min-height: 340px; /* 加高容器，保证整个人能露出来 */
     }
     .desk-bg {
       position: absolute;
@@ -149,28 +149,33 @@
       position: relative;
     }
 
-    /* 槿天华立绘：按高度缩放，保证整个人在框内 */
+    /* 槿天华立绘：继续按宽度缩放，但整体更小，保证整个人能塞进框里 */
     .sprite {
       position: absolute;
       left: 50%;
-      bottom: 0;                           /* 脚贴住底部 */
+      bottom: -150px;                     /* 脚贴住底部 */
       transform: translateX(-50%);
-      height: 82%;                          /* 占据容器高度的 82% */
-      max-height: 280px;                    /* 防止小屏幕太高 */
-      width: auto;                          /* 宽度随比例变化 */
-      z-index: 10;                          /* 在背景和遮罩之上 */
+      width: min(50%, 140px);        /* ★ 比之前 34% 小很多，让高度变矮 */
+      max-height: 90%;               /* 保险一点，最高不超过容器 90% */
+      z-index: 10;                   /* 在背景和遮罩上方 */
       background: transparent;
       cursor: pointer;
       animation: idleFloat 3.2s ease-in-out infinite;
       transform-origin: center bottom;
     }
 
+    @keyframes idleFloat {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%     { transform: translateX(-50%) translateY(4px); }
+    }
+
     .sprite img {
-      width: auto;
-      height: 100%;                         /* 高度贴 sprite */
+      width: 100%;
+      height: auto;
       display: block;
       object-fit: contain;
     }
+
 
 
     /* 状态栏 */
@@ -556,6 +561,7 @@
   const taskCount = document.getElementById("taskCount");
   const taskMode = document.getElementById("taskMode");
   const spriteImg = document.getElementById("spriteImg");
+  const sprite = document.getElementById("sprite");
   const chatBody = document.getElementById("chatBody");
   const chatStatus = document.getElementById("chatStatus");
   const chatPreset = document.getElementById("chatPreset");
@@ -590,6 +596,29 @@
     if (!text) return;
     pushChat("you", text);
     respondChat(text);
+  });
+  // 点击立绘：短暂切换成 alt2 再切回
+  let spriteFlashTimeout = null;
+
+  sprite.addEventListener("click", () => {
+    // 这里你也可以顺便加一点心情变动之类的
+    // changeStat("mood", +1);
+
+    // 如果之前还有没结束的计时器，先清掉
+    if (spriteFlashTimeout) {
+      clearTimeout(spriteFlashTimeout);
+      spriteFlashTimeout = null;
+    }
+
+    // 进入临时表情状态
+    spriteTemp = true;
+    updateSpriteImage();
+
+    // 约 0.5 秒后自动恢复原本状态
+    spriteFlashTimeout = setTimeout(() => {
+      spriteTemp = false;
+      updateSpriteImage();
+    }, 500); // 想更久一点可以改成 700 或 800
   });
 
   /* ---------- 行为逻辑：桌面 ---------- */
@@ -759,7 +788,20 @@
       modeTag.textContent = "可能在加班";
     }
 
-    // 心情好 + 压力不高时切换立绘
+    updateSpriteImage();
+  }
+
+  // 单独管理立绘状态（正常 / 开心 / 被戳）
+  let spriteTemp = false;   // 是否处于“被戳后临时表情”
+
+  function updateSpriteImage() {
+    if (spriteTemp) {
+      // 被戳之后的临时图
+      spriteImg.src = "images/jth_stand_alt2.png";
+      return;
+    }
+
+    // 正常逻辑：根据心情/压力决定是普通立绘还是 开心立绘
     if (state.mood > 80 && state.stress < 35) {
       spriteImg.src = "images/jth_stand_alt.png";
     } else {
