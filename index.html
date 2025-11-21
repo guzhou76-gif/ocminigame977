@@ -4,48 +4,83 @@
   <meta charset="UTF-8" />
   <title>槿天华桌宠模拟器</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --c-bg-deep: #3D3E49;
-      --c-bg-soft: #4a4b57;
-      --c-accent: #65272A;
-      --c-text-main: #C6C1C2;
-      --c-text-sub: #9B9EA6;
-      --radius-lg: 18px;
-      --radius-md: 12px;
-      --shadow-soft: 0 16px 40px rgba(0,0,0,0.4);
+      --c-bg-deep: #2f2a2c;
+      --c-bg-soft: #f5ecdf;
+      --c-petal: #f9d4b3;
+      --c-leaf: #6a8c6e;
+      --c-mint: #cfe6d1;
+      --c-mint-deep: #88b495;
+      --c-ink: #473235;
+      --c-gold: #c9934a;
+      --c-mist: #e8d9c5;
+      --c-text-main: #402d2f;
+      --c-text-sub: #705a57;
+      --paper-base: #f8f1e3;
+      --paper-fiber: rgba(255,255,255,0.65);
+      --paper-scratch: rgba(202,183,158,0.25);
+
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-soft: 0 20px 55px rgba(47, 42, 44, 0.2);
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #3D3E49 0, #1e1f26 50%, #111117 100%);
+      font-family: "Playfair Display", "Cormorant Garamond", "Songti SC", serif;
+      background-color: var(--paper-base);
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.4) 0, rgba(255,255,255,0.4) 2px, transparent 2px, transparent 10px),
+        repeating-linear-gradient(90deg, rgba(222,207,186,0.2) 0, rgba(222,207,186,0.2) 1px, transparent 1px, transparent 14px),
+        radial-gradient(circle at top, rgba(255,255,255,0.7), rgba(244,228,204,0.6));
       color: var(--c-text-main);
       display: flex;
       justify-content: center;
       min-height: 100vh;
+      padding: 20px 12px;
     }
 
     .app-shell {
       width: 100%;
-      max-width: 820px;
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      max-width: 920px;
+      padding: 8px;
     }
 
     .game-card {
       width: 100%;
       border-radius: var(--radius-lg);
-      background: linear-gradient(145deg, #3D3E49, #2a2b33);
-      border: 1px solid rgba(155,158,166,0.4);
+      background-color: var(--paper-base);
+      background-image:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.6) 0, rgba(255,255,255,0.6) 1px, transparent 1px, transparent 22px),
+        repeating-linear-gradient(0deg, rgba(202,183,158,0.15) 0, rgba(202,183,158,0.15) 1px, transparent 1px, transparent 18px);
+      border: 1px solid rgba(123, 93, 71, 0.3);
       box-shadow: var(--shadow-soft);
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      position: relative;
+      isolation: isolate;
+    }
+    .game-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(135deg, rgba(207,230,209,0.3) 0 1px, transparent 1px 18px),
+        repeating-linear-gradient(45deg, rgba(207,230,209,0.2) 0 1px, transparent 1px 18px);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .game-card > * {
+      position: relative;
+      z-index: 1;
     }
 
     /* 顶部栏 */
@@ -53,68 +88,119 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(198,193,194,0.3);
-      background: rgba(61,62,73,0.9);
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(86,64,53,0.2);
+      background-color: rgba(255,255,255,0.85);
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.4) 0, rgba(255,255,255,0.4) 2px, transparent 2px, transparent 12px);
+      backdrop-filter: blur(4px);
     }
     .top-info { display: flex; flex-direction: column; gap: 2px; }
-    .top-title { font-size: 16px; font-weight: 600; letter-spacing: .04em; }
-    .top-sub { font-size: 11px; color: var(--c-text-sub); }
-    .top-pills { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .top-title { font-size: 20px; font-weight: 600; letter-spacing: .08em; color: var(--c-ink); }
+    .top-sub { font-size: 12px; color: var(--c-text-sub); }
+    .top-pills { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .pill {
       border-radius: 999px;
-      border: 1px solid rgba(198,193,194,0.4);
-      padding: 2px 10px;
-      font-size: 10px;
-      color: var(--c-text-sub);
-      background: rgba(33,34,42,0.7);
+      border: 1px solid rgba(116,83,59,0.35);
+      padding: 4px 12px;
+      font-size: 11px;
+      color: var(--c-ink);
+      background: rgba(255,255,255,0.6);
     }
     .pill-accent {
-      border-color: rgba(101,39,42,0.9);
-      background: rgba(101,39,42,0.9);
-      color: #f0d9da;
+      border-color: rgba(201,147,74,0.8);
+      background: linear-gradient(90deg, rgba(201,147,74,0.4), rgba(255,255,255,0.2));
+      color: var(--c-ink);
+    }
+    /* 俄罗斯方块小游戏区域 */
+    .tetris-wrapper {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .tetris-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--c-text-sub);
+      margin-bottom: 6px;
+    }
+
+    #tetrisCanvas {
+      border-radius: 16px;
+      background-color: #fdf7ed;
+      box-shadow: inset 0 0 12px rgba(0,0,0,0.08);
+      border: 1px solid rgba(116,83,59,0.15);
+    }
+
+    .tetris-controls {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .tetris-start {
+      width: 100%;
+    }
+
+    .tetris-tip {
+      font-size: 11px;
+      color: var(--c-text-sub);
+      text-align: center;
     }
 
     /* 主体布局 */
     .main-layout {
       display: grid;
-      grid-template-rows: minmax(320px, 46vh) minmax(240px, 54vh);
+      grid-template-columns: minmax(320px, 1.1fr) minmax(320px, 1fr);
+      gap: 18px;
+      padding: 18px;
     }
     @media (min-width: 900px) {
       .main-layout {
-        grid-template-columns: minmax(360px, 1.2fr) minmax(340px, 1fr);
+        grid-template-columns: 1.1fr 0.9fr;
         grid-template-rows: auto;
       }
-      .desk-area-wrapper {
-        border-right: 1px solid rgba(198,193,194,0.35);
+    }
+    @media (max-width: 899px) {
+      .main-layout {
+        grid-template-columns: 1fr;
       }
     }
     /* 桌面区域 */
     .desk-area-wrapper {
-      padding: 10px 12px 8px;
-      border-bottom: 1px solid rgba(198,193,194,0.35);
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(86,64,53,0.15);
+      background-color: rgba(250, 243, 231, 0.9);
+      background-image:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.4) 0, rgba(255,255,255,0.4) 2px, transparent 2px, transparent 16px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
     }
     .desk-area {
       position: relative;
       border-radius: var(--radius-md);
       overflow: hidden;
-      background: #2a2b33;
+      background: #f5f0e6;
       height: 100%;
-      min-height: 340px; /* 加高容器，保证整个人能露出来 */
+      min-height: 360px;
     }
     .desk-bg {
       position: absolute;
       inset: 0;
       background-size: cover;
       background-position: center;
-      opacity: .6;
-      filter: blur(2px);
-      transform: scale(1.04);
+      opacity: .95;
+      filter: blur(1px) brightness(1.05);
+      transform: scale(1.02);
     }
     .desk-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,.5), rgba(0,0,0,.2));
+      display: none;
     }
     .desk-foreground {
       position: relative;
@@ -133,31 +219,41 @@
       position: relative;
     }
 
-    /* 槿天华立绘：继续按宽度缩放，但整体更小，保证整个人能塞进框里 */
     .sprite {
       position: absolute;
       left: 50%;
-      bottom: -150px;                     /* 脚贴住底部 */
-      transform: translateX(-50%);
-      width: min(50%, 140px);        /* ★ 比之前 34% 小很多，让高度变矮 */
-      max-height: 90%;               /* 保险一点，最高不超过容器 90% */
-      z-index: 10;                   /* 在背景和遮罩上方 */
+      bottom: -140px;
+      width: clamp(110px, 32%, 150px);
+      max-height: 90%;
+      z-index: 10;
       background: transparent;
-      cursor: pointer;
+      cursor: grab;
+      transition: left 3.2s linear;
+      transform: translateX(-50%);
+      touch-action: none;
+    }
+    .sprite.dragging { cursor: grabbing; }
+    .sprite.no-transition { transition: none; }
+    .sprite-art {
+      width: 100%;
       animation: idleFloat 3.2s ease-in-out infinite;
       transform-origin: center bottom;
     }
-
-    @keyframes idleFloat {
-      0%,100% { transform: translateX(-50%) translateY(0); }
-      50%     { transform: translateX(-50%) translateY(4px); }
-    }
-
     .sprite img {
       width: 100%;
       height: auto;
       display: block;
       object-fit: contain;
+      transform-origin: center bottom;
+      transition: transform .25s ease;
+    }
+    .sprite.face-left img {
+      transform: scaleX(-1);
+    }
+
+    @keyframes idleFloat {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(4px); }
     }
 
 
@@ -167,8 +263,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
-      font-size: 11px;
+      gap: 10px;
+      font-size: 12px;
+      padding-top: 6px;
     }
     .status-group {
       display: flex;
@@ -176,116 +273,214 @@
       flex-wrap: wrap;
       align-items: center;
     }
-    .status-item { display: flex; flex-direction: column; gap: 2px; min-width: 80px; }
-    .status-label { font-size: 10px; color: var(--c-text-sub); }
-    .status-bar { height: 6px; border-radius: 999px; background: rgba(24,25,33,.9); overflow: hidden; }
+    .status-item { display: flex; flex-direction: column; gap: 4px; min-width: 90px; }
+    .status-label { font-size: 11px; color: var(--c-text-sub); letter-spacing: 0.02em; }
+    .status-bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.25); overflow: hidden; box-shadow: inset 0 2px 3px rgba(0,0,0,0.15); }
     .status-bar-fill {
       height: 100%;
       border-radius: 999px;
-      background: linear-gradient(90deg, var(--c-accent), #C6C1C2);
-      transition: width .2s ease-out;
+      background: linear-gradient(90deg, var(--c-gold), var(--c-mint-deep));
+      transition: width .25s ease-out;
     }
-    .status-value { font-size: 11px; }
+    .status-value { font-size: 12px; color: #fff; }
     .desk-time-tag {
-      font-size: 10px;
-      color: var(--c-text-sub);
-      padding: 6px 10px;
+      font-size: 11px;
+      color: var(--c-ink);
+      padding: 6px 14px;
       border-radius: 999px;
-      border: 1px solid rgba(198,193,194,.4);
-      background: rgba(24,25,33,.9);
+      border: 1px solid rgba(136,180,149,0.45);
+      background-color: #fdfaf1;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(136,180,149,0.2) 0, rgba(136,180,149,0.2) 1px, transparent 1px, transparent 6px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 8px rgba(136,180,149,0.25);
       white-space: nowrap;
     }
 
     /* 对话框 */
-    .dialog-wrapper { padding: 6px 12px 10px; }
+    .dialog-wrapper { padding: 16px 14px 0; }
     .dialog-box {
-      border-radius: var(--radius-md);
-      border: 1px solid rgba(198,193,194,.45);
-      background: linear-gradient(135deg, rgba(61,62,73,.95), rgba(33,34,42,.95));
-      padding: 8px 10px;
+      position: relative;
+      border-radius: 8px 8px 12px 12px;
+      border: 1px solid rgba(193,164,101,0.4);
+      background-color: #fff6c9;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.4) 0, rgba(255,255,255,0.4) 2px, transparent 2px, transparent 8px);
+      padding: 16px 18px 14px 22px;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8);
+      transform: rotate(-1.2deg);
     }
-    .dialog-name { font-size: 11px; color: var(--c-text-sub); }
-    .dialog-text { font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+    .dialog-box::before {
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: 24px;
+      width: 80px;
+      height: 20px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 4px;
+      border: 1px solid rgba(193,164,101,0.3);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+      transform: rotate(3deg);
+      pointer-events: none;
+    }
+    .dialog-box::after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      left: 12px;
+      right: 12px;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, rgba(193,164,101,0.4) 0 12px, transparent 12px 24px);
+      opacity: 0.2;
+      pointer-events: none;
+    }
+    .dialog-name { font-size: 12px; color: rgba(115,89,62,0.8); letter-spacing: 0.08em; }
+    .dialog-text { font-size: 15px; line-height: 1.6; white-space: pre-wrap; color: var(--c-ink); }
 
     /* 控制区 */
     .control-area {
-      padding: 6px 12px 10px;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(86,64,53,0.18);
+      background-color: var(--paper-base);
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 2px, transparent 2px, transparent 16px),
+        repeating-linear-gradient(90deg, rgba(202,183,158,0.18) 0, rgba(202,183,158,0.18) 1px, transparent 1px, transparent 20px);
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 12px;
+      min-height: 100%;
+      position: relative;
     }
-    .tabs-row { display: flex; gap: 6px; }
+    .control-area::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: inherit;
+      border: 1px dashed rgba(136,180,149,0.35);
+      pointer-events: none;
+    }
+    .tabs-row { display: flex; gap: 10px; }
     .tab-btn {
       flex: 1;
-      border-radius: 999px;
-      padding: 6px 8px;
-      border: none;
+      border-radius: 16px;
+      padding: 10px;
+      border: 1px solid rgba(116,83,59,0.3);
       cursor: pointer;
-      font-size: 12px;
-      background: rgba(33,34,42,.9);
+      font-size: 13px;
+      background-color: #fbf3e8;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.6) 0, rgba(255,255,255,0.6) 1px, transparent 1px, transparent 10px);
       color: var(--c-text-sub);
-      border: 1px solid transparent;
-      transition: background .15s, color .15s, border-color .15s;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), 0 3px 6px rgba(0,0,0,0.08);
+      transition: transform .2s, color .2s, box-shadow .2s;
     }
     .tab-btn.active {
-      background: rgba(101,39,42,.95);
-      color: #f5e9ea;
-      border-color: rgba(198,193,194,.7);
+      background-color: #f2f9f2;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(207,230,209,0.6) 0, rgba(207,230,209,0.6) 1px, transparent 1px, transparent 8px);
+      color: var(--c-ink);
+      border-color: rgba(136,180,149,0.8);
+      box-shadow: inset 0 2px 3px rgba(255,255,255,0.9), 0 8px 18px rgba(136,180,149,0.25);
+      transform: translateY(-2px);
     }
 
-    .panels { position: relative; flex: 1; }
+    .panels { position: relative; flex: 1; min-height: 380px; }
     .panel {
       border-radius: var(--radius-md);
-      border: 1px solid rgba(198,193,194,.35);
-      background: rgba(33,34,42,.96);
-      padding: 8px;
+      border: 1px solid rgba(116,83,59,0.18);
+      background-color: #fdf7ee;
+      padding: 12px;
       display: none;
       height: 100%;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+      background-image:
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 2px, transparent 2px, transparent 18px),
+        repeating-linear-gradient(45deg, rgba(207,230,209,0.2) 0, rgba(207,230,209,0.2) 2px, transparent 2px, transparent 18px);
     }
     .panel.active { display: block; }
 
     .actions-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-      margin-bottom: 4px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 8px;
     }
     .action-card {
-      border-radius: 10px;
-      border: 1px solid rgba(198,193,194,.4);
-      background: rgba(37,38,47,.95);
-      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid rgba(116,83,59,0.25);
+      background-color: #fcf3e4;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 2px, transparent 2px, transparent 10px);
+      padding: 12px;
       cursor: pointer;
-      font-size: 11px;
+      font-size: 12px;
       text-align: left;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 8px rgba(0,0,0,0.05);
+    }
+    .action-card::after {
+      content: "";
+      display: block;
+      margin-top: 8px;
+      height: 2px;
+      width: 32px;
+      background: linear-gradient(90deg, rgba(136,180,149,0.3), rgba(201,147,74,0.4));
+    }
+    .action-card:hover,
+    .task-btn:hover,
+    .tetris-controls button:hover,
+    .tetris-start:hover,
+    .chat-send-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 8px 16px rgba(0,0,0,0.08);
+    }
+    .action-card:active,
+    .task-btn:active,
+    .tetris-controls button:active,
+    .tetris-start:active,
+    .chat-send-btn:active {
+      transform: translateY(1px);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
     }
     /* 任务按钮配色：稍微偏红一点，跟桌面按钮区分开 */
     .task-btn {
-      border-radius: 10px;
-      border: 1px solid rgba(101,39,42,0.85);
-      background: rgba(61,40,42,0.95);
-      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid rgba(201,147,74,0.45);
+      background-color: #fff9f1;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.55) 0, rgba(255,255,255,0.55) 2px, transparent 2px, transparent 12px);
+      padding: 14px;
       cursor: pointer;
-      font-size: 11px;
+      font-size: 12px;
       text-align: left;
-      color: #f5e9ea;
+      color: var(--c-ink);
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.9), 0 5px 10px rgba(0,0,0,0.06);
     }
 
     .task-btn span {
-      color: #f0d9da;
-      opacity: 0.85;
+      color: var(--c-text-sub);
+      opacity: 0.9;
     }
-    .action-title { font-size: 12px; font-weight: 500; }
+    .action-title { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; }
     .action-sub { font-size: 11px; color: var(--c-text-sub); }
 
     .small-log,
     .task-log {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--c-text-sub);
-      max-height: 80px;
+      max-height: 120px;
       overflow-y: auto;
       white-space: pre-wrap;
-      margin-top: 4px;
+      margin-top: 6px;
+      padding: 12px;
+      background-color: rgba(230,245,233,0.85);
+      background-image:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.4) 0, rgba(255,255,255,0.4) 1px, transparent 1px, transparent 12px);
+      border-radius: 14px;
+      border: 1px solid rgba(136,180,149,0.25);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
     }
 
     /* 聊天界面 */
@@ -293,25 +488,32 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      border-radius: 10px;
+      border-radius: 18px;
       overflow: hidden;
-      background: #2c2d35;
+      background-color: #f7eedf;
+      background-image:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 2px, transparent 2px, transparent 12px);
+      border: 1px solid rgba(116,83,59,0.2);
     }
     .chat-top {
-      padding: 6px 8px;
-      background: #3D3E49;
-      border-bottom: 1px solid rgba(198,193,194,.25);
+      padding: 10px 12px;
+      background-color: rgba(255,255,255,0.9);
+      background-image:
+        repeating-linear-gradient(0deg, rgba(235,209,186,0.3) 0, rgba(235,209,186,0.3) 1px, transparent 1px, transparent 8px);
+      border-bottom: 1px solid rgba(116,83,59,0.15);
       display: flex;
       justify-content: space-between;
       font-size: 11px;
     }
     .chat-body {
       flex: 1;
-      padding: 6px 6px 0;
+      padding: 10px 10px 0;
       overflow-y: auto;
-      background: #2f3039;
+      background-color: rgba(255,255,255,0.8);
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 2px, transparent 2px, transparent 14px);
     }
-    .chat-row { display: flex; margin-bottom: 4px; }
+    .chat-row { display: flex; margin-bottom: 6px; }
     .chat-row.oc { justify-content: flex-start; }
     .chat-row.you { justify-content: flex-end; }
     .chat-bubble {
@@ -323,73 +525,99 @@
       white-space: pre-wrap;
     }
     .chat-row.oc .chat-bubble {
-      border-bottom-left-radius: 3px;
-      background: #3D3E49;
+      border-bottom-left-radius: 4px;
+      background: rgba(201,147,74,0.15);
+      color: var(--c-ink);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05);
     }
     .chat-row.you .chat-bubble {
-      border-bottom-right-radius: 3px;
-      background: #65272A;
-      color: #f5e9ea;
+      border-bottom-right-radius: 4px;
+      background: rgba(207,230,209,0.5);
+      color: var(--c-ink);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05);
     }
     .chat-input-bar {
-      padding: 4px 6px;
+      padding: 10px;
       display: flex;
-      gap: 4px;
-      background: #3D3E49;
-      border-top: 1px solid rgba(198,193,194,.25);
+      gap: 6px;
+      background-color: rgba(241,223,202,0.9);
+      background-image:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.4) 0, rgba(255,255,255,0.4) 1px, transparent 1px, transparent 10px);
+      border-top: 1px solid rgba(116,83,59,0.1);
     }
     .chat-preset {
       flex: 1;
-      border-radius: 999px;
-      padding: 4px 8px;
-      background: #2a2b33;
+      border-radius: 14px;
+      padding: 8px 12px;
+      background-color: rgba(255,255,255,0.8);
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.6) 0, rgba(255,255,255,0.6) 1px, transparent 1px, transparent 8px);
       color: var(--c-text-sub);
-      border: 1px solid rgba(198,193,194,.4);
-      font-size: 11px;
+      border: 1px solid rgba(116,83,59,.25);
+      font-size: 12px;
     }
     .chat-send-btn {
-      border-radius: 999px;
-      border: none;
-      background: #65272A;
-      color: #f5e9ea;
-      padding: 4px 10px;
-      font-size: 11px;
+      border-radius: 14px;
+      border: 1px solid rgba(106,140,110,0.5);
+      background-color: #f3f9f3;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(207,230,209,0.4) 0, rgba(207,230,209,0.4) 1px, transparent 1px, transparent 6px);
+      color: var(--c-ink);
+      padding: 8px 14px;
+      font-size: 12px;
       cursor: pointer;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.9), 0 5px 10px rgba(106,140,110,0.25);
     }
 
     .bottom-note {
-      padding: 4px 14px 10px;
-      font-size: 10px;
+      padding: 0 18px 16px;
+      font-size: 11px;
       color: var(--c-text-sub);
       text-align: right;
     }
+
+    button, .action-card, .task-btn {
+      font-family: "Cormorant Garamond", "Playfair Display", serif;
+      letter-spacing: 0.02em;
+    }
+
+    button {
+      transition: transform .2s, box-shadow .2s, background .2s;
+    }
+
+    button:focus-visible,
+    .action-card:focus-visible,
+    .task-btn:focus-visible {
+      outline: 2px solid rgba(106,140,110,0.6);
+      outline-offset: 2px;
+    }
+
+    .tetris-controls button,
+    .tetris-start {
+      border-radius: 14px;
+      border: 1px solid rgba(116,83,59,0.25);
+      background-color: #fff7ec;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 1px, transparent 1px, transparent 10px);
+      color: var(--c-ink);
+      font-size: 13px;
+      padding: 8px 0;
+      cursor: pointer;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.9), 0 4px 8px rgba(0,0,0,0.06);
+    }
+
     @media (max-width: 768px) {
-    /* 整个卡片可以稍微更贴屏幕边缘一点 */
-    .app-shell {
-      padding: 8px;
-    }
-
-    /* 主体上下排，留出更多高度 */
-    .main-layout {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto;
-    }
-
-    /* 桌面区域高度略小一点，给下方按钮留空间 */
-    .desk-area {
-      min-height: 300px;
-    }
-
-    /* 桌面/任务里的按钮改成一列排，不要两列挤在一起 */
-    .actions-grid {
-      grid-template-columns: 1fr;
-    }
-
-    /* 文字稍微小一点，避免挤 */
-    .action-card,
-    .task-btn {
-      font-size: 12px;
-    }
+      .main-layout {
+        padding: 14px;
+      }
+      .actions-grid {
+        grid-template-columns: 1fr;
+      }
+      .panels { min-height: 320px; }
+      body {
+        padding: 10px 8px;
+      }
+      .tab-btn { font-size: 12px; padding: 9px 8px; }
     }
   </style>
 </head>
@@ -401,7 +629,7 @@
     <div class="top-bar">
       <div class="top-info">
         <div class="top-title">槿天华桌宠模拟器</div>
-        <div class="top-sub" id="topSub">桌面已联动，等待你的指派。</div>
+        <div class="top-sub" id="topSub">设主@赋闲，制作者@97鸦</div>
       </div>
       <div class="top-pills">
         <div class="pill">本地存档</div>
@@ -420,7 +648,9 @@
             <div class="desk-foreground">
               <div class="sprite-lane">
                 <div class="sprite" id="sprite">
-                  <img id="spriteImg" src="images/jth_stand.png" alt="槿天华">
+                  <div class="sprite-art">
+                    <img id="spriteImg" src="images/jth_stand.png" alt="槿天华">
+                  </div>
                 </div>
               </div>
 
@@ -463,88 +693,114 @@
         <div class="tabs-row">
           <button class="tab-btn active" data-tab="desk">桌面</button>
           <button class="tab-btn" data-tab="task">任务</button>
+          <button class="tab-btn" data-tab="game">小游戏</button>
           <button class="tab-btn" data-tab="chat">消息</button>
-        </div>
+        </div>      
 
-        <div class="panels">
-          <!-- 桌面互动 -->
-          <div class="panel active" id="panel-desk">
-            <div class="actions-grid">
-              <div class="action-card" data-action="pet">
-                <div class="action-title">摸头 / 点他</div>
-                <div class="action-sub">确认他暂时不会逃出屏幕。</div>
-              </div>
-              <div class="action-card" data-action="snack">
-                <div class="action-title">投喂零食</div>
-                <div class="action-sub">桌宠靠糖分续命。</div>
-              </div>
-              <div class="action-card" data-action="remindWork">
-                <div class="action-title">提醒工作</div>
-                <div class="action-sub">“你不是还有待办吗？”</div>
-              </div>
-              <div class="action-card" data-action="toggleDay">
-                <div class="action-title">昼夜切换</div>
-                <div class="action-sub">看他加班 / 下班。</div>
-              </div>
-            </div>
-            <div class="small-log" id="deskLog"></div>
-          </div>
-
-          <!-- 任务 -->
-          <div class="panel" id="panel-task">
-            <div style="font-size:11px;display:flex;justify-content:space-between;margin-bottom:4px;">
-              <div>未处理事务：<span id="taskCount"></span></div>
-              <div>今日模式：<span id="taskMode"></span></div>
-            </div>
-            <div class="actions-grid">
-              <button class="task-btn" data-task="spawn">
-                生成新任务<br><span>新邮件 / 抄送 / 周报。</span>
-              </button>
-              <button class="task-btn" data-task="processOne">
-                处理一项<br><span>认真一点。</span>
-              </button>
-              <button class="task-btn" data-task="processBatch">
-                集中清理<br><span>开清单模式。</span>
-              </button>
-              <button class="task-btn" data-task="ignore">
-                假装没看到<br><span>危险行为。</span>
-              </button>
-            </div>
-            <div class="task-log" id="taskLog"></div>
-          </div>
-
-          <!-- 聊天 -->
-          <div class="panel" id="panel-chat">
-            <div class="chat-shell">
-              <div class="chat-top">
-                <div>
-                  <div>槿天华</div>
-                  <div id="chatStatus" style="font-size:10px;color:#C6C1C2;">状态：桌宠在线</div>
+          <div class="panels">
+            <!-- 桌面互动 -->
+            <div class="panel active" id="panel-desk">
+              <div class="actions-grid">
+                <div class="action-card" data-action="pet">
+                  <div class="action-title">摸头 / 点他</div>
+                  <div class="action-sub">确认他暂时不会逃出屏幕。</div>
                 </div>
-                <div class="pill" style="padding:2px 8px;">聊天界面</div>
+                <div class="action-card" data-action="snack">
+                  <div class="action-title">投喂零食</div>
+                  <div class="action-sub">王美丽给了你一份员工餐清单。</div>
+                </div>
+                <div class="action-card" data-action="remindWork">
+                  <div class="action-title">提醒工作</div>
+                  <div class="action-sub">“你不是还有待办吗？”</div>
+                </div>
+                <div class="action-card" data-action="toggleDay">
+                  <div class="action-title">昼夜切换</div>
+                  <div class="action-sub">看他加班 / 下班。</div>
+                </div>
+              <div class="action-card" data-action="cycleSprite">
+                <div class="action-title">换装 / 转身</div>
+                <div class="action-sub">普通 / 女仆前后视角。</div>
               </div>
-              <div class="chat-body" id="chatBody"></div>
-              <div class="chat-input-bar">
-                <select class="chat-preset" id="chatPreset">
-                  <option>现在忙吗？</option>
-                  <option>你会加班到几点？</option>
-                  <option>可以摸鱼吗？</option>
-                  <option>累的话休息一下。</option>
-                </select>
-                <button class="chat-send-btn" id="chatSendBtn">发送</button>
+              </div>
+              <div class="small-log" id="deskLog"></div>
+            </div>
+
+            <!-- 任务 -->
+            <div class="panel" id="panel-task">
+              <div style="font-size:12px;display:flex;justify-content:space-between;margin-bottom:8px;color:var(--c-text-sub);">
+                <div>未处理事务：<span id="taskCount"></span></div>
+                <div>今日模式：<span id="taskMode"></span></div>
+              </div>
+              <div class="actions-grid">
+                <button class="task-btn" data-task="spawn">
+                  生成新任务<br><span>新邮件 / 抄送 / 周报。</span>
+                </button>
+                <button class="task-btn" data-task="processOne">
+                  处理一项<br><span>认真一点。</span>
+                </button>
+                <button class="task-btn" data-task="processBatch">
+                  集中清理<br><span>开清单模式。</span>
+                </button>
+                <button class="task-btn" data-task="ignore">
+                  假装没看到<br><span>危险行为。</span>
+                </button>
+              </div>
+              <div class="task-log" id="taskLog"></div>
+            </div>
+            <!-- 俄罗斯方块小游戏 -->
+            <div class="panel" id="panel-game">
+              <div class="tetris-wrapper">
+                <div class="tetris-header">
+                  <span>俄罗斯方块 · 办公摸鱼版</span>
+                  <span id="tetrisScore">得分 0</span>
+                </div>
+
+                <canvas id="tetrisCanvas" width="180" height="360"></canvas>
+
+                <div class="tetris-controls">
+                  <button data-tact="left">←</button>
+                  <button data-tact="rotate">↻</button>
+                  <button data-tact="right">→</button>
+                  <button data-tact="down">↓</button>
+                </div>
+
+                <button class="tetris-start" id="tetrisStartBtn">开始 / 重新开始</button>
+                <div class="tetris-tip">键盘可以用方向键操作；手机点下面的按钮。</div>
+              </div>
+            </div>
+            <!-- 聊天 -->
+            <div class="panel" id="panel-chat">
+              <div class="chat-shell">
+                <div class="chat-top">
+                  <div>
+                    <div>槿天华</div>
+                    <div id="chatStatus" style="font-size:10px;color:#705a57;">状态：桌宠在线</div>
+                  </div>
+                  <div class="pill" style="padding:4px 10px;">聊天界面</div>
+                </div>
+                <div class="chat-body" id="chatBody"></div>
+                <div class="chat-input-bar">
+                  <select class="chat-preset" id="chatPreset">
+                    <option>现在忙吗？</option>
+                    <option>你会加班到几点？</option>
+                    <option>可以摸鱼吗？</option>
+                    <option>累的话休息一下。</option>
+                  </select>
+                  <button class="chat-send-btn" id="chatSendBtn">发送</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="bottom-note">数据存储于本地浏览器，不会上传。</div>
+          <div class="bottom-note">数据存储于本地浏览器，不会上传。</div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  /* ---------- 状态 ---------- */
+  /* ---------- 槿天华桌宠：主状态 ---------- */
   const DEFAULT_STATE = {
     mood: 70,
     stress: 40,
@@ -553,9 +809,11 @@
     dayMode: "day",
     deskLog: "",
     taskLog: "",
-    chatHistory: []
+    chatHistory: [],
+    spriteVariant: "default",
+    spriteFacing: "right",
+    spriteX: 50
   };
-
   let state = loadState();
 
   /* ---------- DOM ---------- */
@@ -576,23 +834,37 @@
   const chatBody = document.getElementById("chatBody");
   const chatStatus = document.getElementById("chatStatus");
   const chatPreset = document.getElementById("chatPreset");
-
   const sprite = document.getElementById("sprite");
   const spriteImg = document.getElementById("spriteImg");
+  const deskArea = document.querySelector(".desk-area");
 
   /* ---------- 立绘状态控制 ---------- */
-  // 是否处于“被戳后的临时表情”
   let spriteTemp = false;
   let spriteFlashTimeout = null;
+  const SPRITE_VARIANTS = ["default", "maidFront", "maidBack"];
+  state.spriteVariant = state.spriteVariant || "default";
+  state.spriteFacing = state.spriteFacing || "right";
+  state.spriteX = typeof state.spriteX === "number" ? state.spriteX : 50;
+  let spriteCurrentX = state.spriteX;
+  let spriteFacing = state.spriteFacing;
+  let spriteWalkTimer = null;
+  let spriteDragging = false;
+  let spriteDragPointerId = null;
+  let deskRect = null;
 
   function updateSpriteImage() {
+    if (state.spriteVariant === "maidFront") {
+      spriteImg.src = "images/jth_maid_front.png";
+      return;
+    }
+    if (state.spriteVariant === "maidBack") {
+      spriteImg.src = "images/jth_maid_back.png";
+      return;
+    }
     if (spriteTemp) {
-      // 被戳时显示的立绘
       spriteImg.src = "images/jth_stand_alt2.png";
       return;
     }
-
-    // 正常逻辑：根据心情 / 压力选择立绘
     if (state.mood > 80 && state.stress < 35) {
       spriteImg.src = "images/jth_stand_alt.png";
     } else {
@@ -600,17 +872,132 @@
     }
   }
 
+  function clampPercent(value) {
+    return Math.max(8, Math.min(92, value));
+  }
+
+  function setSpriteFacing(dir, { save = true } = {}) {
+    spriteFacing = dir === "left" ? "left" : "right";
+    sprite.classList.toggle("face-left", spriteFacing === "left");
+    state.spriteFacing = spriteFacing;
+    if (save) saveState();
+  }
+
+  function setSpritePosition(x, { immediate = false, save = true } = {}) {
+    const clamped = clampPercent(x);
+    spriteCurrentX = clamped;
+    state.spriteX = clamped;
+    sprite.style.left = clamped + "%";
+    if (immediate) {
+      sprite.classList.add("no-transition");
+      if (!spriteDragging) {
+        requestAnimationFrame(() => sprite.classList.remove("no-transition"));
+      }
+    } else if (!spriteDragging) {
+      sprite.classList.remove("no-transition");
+    }
+    if (save) saveState();
+  }
+
+  function startSpriteWalkCycle() {
+    if (spriteWalkTimer) clearInterval(spriteWalkTimer);
+    spriteWalkTimer = setInterval(() => {
+      if (spriteDragging) return;
+      const next = 10 + Math.random() * 76;
+      setSpriteFacing(next < spriteCurrentX ? "left" : "right", { save: false });
+      setSpritePosition(next, { save: false });
+    }, 4200);
+  }
+
+  function setupSpriteDrag() {
+    if (!sprite) return;
+
+    sprite.addEventListener("pointerdown", onSpritePointerDown);
+    sprite.addEventListener("pointermove", onSpritePointerMove);
+    sprite.addEventListener("pointerup", onSpritePointerUp);
+    sprite.addEventListener("pointercancel", onSpritePointerUp);
+
+    window.addEventListener("resize", () => {
+      if (spriteDragging && deskArea) {
+        deskRect = deskArea.getBoundingClientRect();
+      }
+    });
+  }
+
+  function onSpritePointerDown(e) {
+    if (e.button !== undefined && e.button !== 0) return;
+    spriteDragging = true;
+    spriteDragPointerId = e.pointerId;
+    sprite.classList.add("dragging", "no-transition");
+    if (deskArea) {
+      deskRect = deskArea.getBoundingClientRect();
+    }
+    if (sprite.setPointerCapture) {
+      try { sprite.setPointerCapture(e.pointerId); } catch {}
+    }
+  }
+
+  function onSpritePointerMove(e) {
+    if (!spriteDragging || e.pointerId !== spriteDragPointerId || !deskRect) return;
+    const relative = ((e.clientX - deskRect.left) / deskRect.width) * 100;
+    const clamped = clampPercent(relative);
+    spriteCurrentX = clamped;
+    state.spriteX = clamped;
+    sprite.style.left = clamped + "%";
+    if (e.movementX < -0.5) {
+      setSpriteFacing("left", { save: false });
+    } else if (e.movementX > 0.5) {
+      setSpriteFacing("right", { save: false });
+    }
+  }
+
+  function onSpritePointerUp(e) {
+    if (!spriteDragging || (e && e.pointerId !== spriteDragPointerId)) return;
+    spriteDragging = false;
+    sprite.classList.remove("dragging");
+    sprite.classList.remove("no-transition");
+    if (sprite.releasePointerCapture) {
+      try { sprite.releasePointerCapture(spriteDragPointerId); } catch {}
+    }
+    spriteDragPointerId = null;
+    setSpritePosition(spriteCurrentX);
+  }
+
+  function cycleSpriteVariant() {
+    const current = state.spriteVariant || "default";
+    const nextIndex = (SPRITE_VARIANTS.indexOf(current) + 1) % SPRITE_VARIANTS.length;
+    const next = SPRITE_VARIANTS[nextIndex];
+    state.spriteVariant = next;
+    let line = "";
+    if (next === "default") {
+      line = "他换回了日常的正装。";
+      dialogText.textContent = "这样看起来，更像是正统的桌宠了。";
+    } else if (next === "maidFront") {
+      line = "他换上了女仆装，认真地朝你行了个礼。";
+      dialogText.textContent = "……偶尔配合一下你的奇怪提案。";
+    } else {
+      line = "他背对着你，似乎在端着茶盘。";
+      dialogText.textContent = "背后也要打点吗？……好吧。";
+    }
+    appendDeskLog(line);
+    updateSpriteImage();
+    saveState();
+  }
+
   /* ---------- 标签页切换 ---------- */
   const tabButtons = document.querySelectorAll(".tab-btn");
   const panels = {
     desk: document.getElementById("panel-desk"),
     task: document.getElementById("panel-task"),
+    game: document.getElementById("panel-game"),
     chat: document.getElementById("panel-chat")
   };
+  let activeTab = "desk";
 
   tabButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-      const tab = btn.dataset.tab; // desk / task / chat
+      const tab = btn.dataset.tab;
+      activeTab = tab;
       tabButtons.forEach(b => b.classList.toggle("active", b === btn));
       Object.keys(panels).forEach(key => {
         panels[key].classList.toggle("active", key === tab);
@@ -622,11 +1009,9 @@
   document.querySelectorAll(".action-card").forEach(btn => {
     btn.addEventListener("click", () => act(btn.dataset.action));
   });
-
   document.querySelectorAll(".task-btn").forEach(btn => {
     btn.addEventListener("click", () => taskAct(btn.dataset.task));
   });
-
   document.getElementById("chatSendBtn").addEventListener("click", () => {
     const text = chatPreset.value;
     if (!text) return;
@@ -634,21 +1019,13 @@
     respondChat(text);
   });
 
-  // ★ 点击立绘：短暂切换成 alt2 再切回
+  // 点击立绘：短暂切换成 alt2
   sprite.addEventListener("click", () => {
-    // 你也可以在这里顺便加一点属性变化
+    if (spriteDragging) return;
     changeStat("mood", +1);
-
-    // 如果上一次的计时还没结束，先取消
-    if (spriteFlashTimeout) {
-      clearTimeout(spriteFlashTimeout);
-      spriteFlashTimeout = null;
-    }
-
+    if (spriteFlashTimeout) clearTimeout(spriteFlashTimeout);
     spriteTemp = true;
     updateSpriteImage();
-
-    // 0.5 秒后恢复正常立绘逻辑
     spriteFlashTimeout = setTimeout(() => {
       spriteTemp = false;
       updateSpriteImage();
@@ -667,7 +1044,7 @@
         changeStat("mood", +8);
         changeStat("stress", -3);
         dialogText.textContent = "线上投喂也算数？那我就当真的收下了。";
-        appendDeskLog("你在桌面角落摆了一杯虚构奶茶，他的表情明显放松了一点。");
+        appendDeskLog("你在桌面角落摆了一杯拿铁，他的表情明显放松了一点。……电子宠物也会喝虚构咖啡吗？");
         break;
       case "remindWork":
         changeStat("stress", +5);
@@ -677,6 +1054,9 @@
         break;
       case "toggleDay":
         toggleDayNight();
+        break;
+      case "cycleSprite":
+        cycleSpriteVariant();
         break;
     }
     saveState();
@@ -689,7 +1069,7 @@
       case "spawn":
         state.tasks += 1;
         changeStat("workload", +10);
-        appendTaskLog("新任务生成：某个主题行只有“在吗”的邮件。");
+        appendTaskLog("新任务生成：某个主题行只有“在吗”的邮件。到底是什么人在发这些东西啊？！");
         break;
       case "processOne":
         if (state.tasks > 0) {
@@ -830,24 +1210,17 @@
   function appendDeskLog(text) {
     state.deskLog = (state.deskLog ? state.deskLog + "\n- " : "- ") + text;
   }
-
   function appendTaskLog(text) {
     state.taskLog = (state.taskLog ? state.taskLog + "\n- " : "- ") + text;
   }
-
   function changeStat(key, delta) {
     state[key] = clamp((state[key] ?? 0) + delta);
   }
-
-  function clamp(v) {
-    return Math.max(0, Math.min(100, v));
-  }
+  function clamp(v) { return Math.max(0, Math.min(100, v)); }
 
   function saveState() {
-    // 换一个新的 key，避免旧版本存档格式冲突
     localStorage.setItem("jth_pet_state_v3", JSON.stringify(state));
   }
-
   function loadState() {
     try {
       const raw = localStorage.getItem("jth_pet_state_v3");
@@ -857,8 +1230,257 @@
     }
   }
 
+  /* ================== 俄罗斯方块 ================== */
+  const tCanvas = document.getElementById("tetrisCanvas");
+  const tScoreEl = document.getElementById("tetrisScore");
+  const tStartBtn = document.getElementById("tetrisStartBtn");
+  const tCtrlButtons = document.querySelectorAll(".tetris-controls button");
+
+  let tCtx;
+  const T_COLS = 10;
+  const T_ROWS = 20;
+  const T_SIZE = 18;
+  let tBoard;
+  let tCurrent;
+  let tInterval = null;
+  let tScore = 0;
+
+  const T_SHAPES = [
+    { // I
+      color: "#C6C1C2",
+      matrix: [[1,1,1,1]]
+    },
+    { // O
+      color: "#9B9EA6",
+      matrix: [[1,1],[1,1]]
+    },
+    { // T
+      color: "#65272A",
+      matrix: [
+        [0,1,0],
+        [1,1,1]
+      ]
+    },
+    { // L
+      color: "#d1a39f",
+      matrix: [
+        [1,0,0],
+        [1,1,1]
+      ]
+    }
+  ];
+
+  function initTetris() {
+    if (!tCanvas || !tCanvas.getContext) return;
+    tCtx = tCanvas.getContext("2d");
+    resetTetris();
+  }
+
+  function resetTetris() {
+    tBoard = Array.from({length: T_ROWS}, () => Array(T_COLS).fill(0));
+    tScore = 0;
+    updateTetrisScore();
+    spawnPiece();
+    drawTetris();
+  }
+
+  function updateTetrisScore() {
+    if (tScoreEl) tScoreEl.textContent = "得分 " + tScore;
+  }
+
+  function spawnPiece() {
+    const shape = T_SHAPES[Math.floor(Math.random() * T_SHAPES.length)];
+    tCurrent = {
+      matrix: shape.matrix.map(row => row.slice()),
+      row: 0,
+      col: Math.floor(T_COLS / 2) - 2,
+      color: shape.color
+    };
+    if (collides(tCurrent, 0, 0)) {
+      // game over
+      clearInterval(tInterval);
+      tInterval = null;
+      dialogText.textContent = "方块已经堆到顶了。要不要重新来一局？";
+    }
+  }
+
+  function rotateMatrix(m) {
+    const rows = m.length, cols = m[0].length;
+    const res = Array.from({length: cols}, () => Array(rows).fill(0));
+    for (let r=0; r<rows; r++) {
+      for (let c=0; c<cols; c++) {
+        res[c][rows - 1 - r] = m[r][c];
+      }
+    }
+    return res;
+  }
+
+  function collides(piece, offR, offC) {
+    const m = piece.matrix;
+    for (let r=0; r<m.length; r++) {
+      for (let c=0; c<m[r].length; c++) {
+        if (!m[r][c]) continue;
+        const nr = piece.row + r + offR;
+        const nc = piece.col + c + offC;
+        if (nr < 0 || nr >= T_ROWS || nc < 0 || nc >= T_COLS) return true;
+        if (tBoard[nr][nc]) return true;
+      }
+    }
+    return false;
+  }
+
+  function mergePiece() {
+    const m = tCurrent.matrix;
+    for (let r=0; r<m.length; r++) {
+      for (let c=0; c<m[r].length; c++) {
+        if (m[r][c]) {
+          const nr = tCurrent.row + r;
+          const nc = tCurrent.col + c;
+          if (nr >= 0 && nr < T_ROWS && nc >= 0 && nc < T_COLS) {
+            tBoard[nr][nc] = tCurrent.color;
+          }
+        }
+      }
+    }
+  }
+
+  function clearLines() {
+    let lines = 0;
+    for (let r = T_ROWS - 1; r >= 0; ) {
+      if (tBoard[r].every(cell => cell)) {
+        tBoard.splice(r, 1);
+        tBoard.unshift(Array(T_COLS).fill(0));
+        lines++;
+      } else {
+        r--;
+      }
+    }
+    if (lines > 0) {
+      tScore += lines * 10;
+      updateTetrisScore();
+    }
+  }
+
+  function stepTetris() {
+    if (!tCurrent) return;
+    if (!collides(tCurrent, 1, 0)) {
+      tCurrent.row++;
+    } else {
+      mergePiece();
+      clearLines();
+      spawnPiece();
+    }
+    drawTetris();
+  }
+
+  function drawTetris() {
+    if (!tCtx) return;
+    tCtx.clearRect(0,0,tCanvas.width,tCanvas.height);
+
+    // 背板
+    tCtx.fillStyle = "#fdf7ed";
+    tCtx.fillRect(0,0,tCanvas.width,tCanvas.height);
+
+    // 现有堆叠
+    for (let r=0; r<T_ROWS; r++) {
+      for (let c=0; c<T_COLS; c++) {
+        const cell = tBoard[r][c];
+        if (cell) {
+          drawBlock(c, r, cell);
+        } else {
+          // 画淡淡的网格
+          tCtx.strokeStyle = "rgba(71,55,40,0.1)";
+          tCtx.strokeRect(c*T_SIZE, r*T_SIZE, T_SIZE, T_SIZE);
+        }
+      }
+    }
+
+    // 当前方块
+    if (tCurrent) {
+      const m = tCurrent.matrix;
+      for (let r=0; r<m.length; r++) {
+        for (let c=0; c<m[r].length; c++) {
+          if (m[r][c]) {
+            drawBlock(tCurrent.col + c, tCurrent.row + r, tCurrent.color);
+          }
+        }
+      }
+    }
+  }
+
+  function drawBlock(col, row, color) {
+    tCtx.fillStyle = color;
+    tCtx.fillRect(col*T_SIZE, row*T_SIZE, T_SIZE, T_SIZE);
+    tCtx.strokeStyle = "rgba(0,0,0,0.4)";
+    tCtx.strokeRect(col*T_SIZE, row*T_SIZE, T_SIZE, T_SIZE);
+  }
+
+  function movePiece(dx, dy) {
+    if (!tCurrent) return;
+    const test = {
+      matrix: tCurrent.matrix,
+      row: tCurrent.row + dy,
+      col: tCurrent.col + dx,
+      color: tCurrent.color
+    };
+    if (!collides(test, 0, 0)) {
+      tCurrent.row += dy;
+      tCurrent.col += dx;
+      drawTetris();
+    }
+  }
+
+  function rotatePiece() {
+    if (!tCurrent) return;
+    const rotated = rotateMatrix(tCurrent.matrix);
+    const test = {
+      matrix: rotated,
+      row: tCurrent.row,
+      col: tCurrent.col,
+      color: tCurrent.color
+    };
+    if (!collides(test, 0, 0)) {
+      tCurrent.matrix = rotated;
+      drawTetris();
+    }
+  }
+
+  // 控件与键盘
+  if (tStartBtn) {
+    tStartBtn.addEventListener("click", () => {
+      resetTetris();
+      if (tInterval) clearInterval(tInterval);
+      tInterval = setInterval(stepTetris, 500);
+    });
+  }
+
+  tCtrlButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const act = btn.dataset.tact;
+      if (!tCurrent) return;
+      if (act === "left") movePiece(-1,0);
+      if (act === "right") movePiece(1,0);
+      if (act === "down") movePiece(0,1);
+      if (act === "rotate") rotatePiece();
+    });
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (activeTab !== "game") return; // 只有在小游戏界面时才接键盘
+    if (!tCurrent) return;
+    if (e.key === "ArrowLeft") { e.preventDefault(); movePiece(-1,0); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); movePiece(1,0); }
+    else if (e.key === "ArrowDown") { e.preventDefault(); movePiece(0,1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); rotatePiece(); }
+  });
+
   /* ---------- 初始化 ---------- */
+  setSpriteFacing(state.spriteFacing || "right", { save: false });
+  setSpritePosition(state.spriteX ?? 50, { immediate: true, save: false });
+  setupSpriteDrag();
+  startSpriteWalkCycle();
   initChat();
+  initTetris();
   updateUI();
 </script>
 </body>
