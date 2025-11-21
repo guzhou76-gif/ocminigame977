@@ -89,22 +89,6 @@
         border-right: 1px solid rgba(198,193,194,0.35);
       }
     }
-    /* 手机端适配：按钮改为一列，留点呼吸感 */
-    @media (max-width: 600px) {
-      .main-layout {
-        grid-template-rows: minmax(300px, 50vh) minmax(260px, 50vh);
-      }
-
-      .actions-grid {
-        grid-template-columns: 1fr;      /* 原来是 2 列，这里改成单列 */
-      }
-
-      .action-card,
-      .task-btn {
-        font-size: 12px;
-      }
-    }
-
     /* 桌面区域 */
     .desk-area-wrapper {
       padding: 10px 12px 8px;
@@ -379,6 +363,34 @@
       color: var(--c-text-sub);
       text-align: right;
     }
+    @media (max-width: 768px) {
+    /* 整个卡片可以稍微更贴屏幕边缘一点 */
+    .app-shell {
+      padding: 8px;
+    }
+
+    /* 主体上下排，留出更多高度 */
+    .main-layout {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+    }
+
+    /* 桌面区域高度略小一点，给下方按钮留空间 */
+    .desk-area {
+      min-height: 300px;
+    }
+
+    /* 桌面/任务里的按钮改成一列排，不要两列挤在一起 */
+    .actions-grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* 文字稍微小一点，避免挤 */
+    .action-card,
+    .task-btn {
+      font-size: 12px;
+    }
+    }
   </style>
 </head>
 <body>
@@ -543,6 +555,7 @@
     taskLog: "",
     chatHistory: []
   };
+
   let state = loadState();
 
   /* ---------- DOM ---------- */
@@ -560,11 +573,32 @@
   const taskLog = document.getElementById("taskLog");
   const taskCount = document.getElementById("taskCount");
   const taskMode = document.getElementById("taskMode");
-  const spriteImg = document.getElementById("spriteImg");
-  const sprite = document.getElementById("sprite");
   const chatBody = document.getElementById("chatBody");
   const chatStatus = document.getElementById("chatStatus");
   const chatPreset = document.getElementById("chatPreset");
+
+  const sprite = document.getElementById("sprite");
+  const spriteImg = document.getElementById("spriteImg");
+
+  /* ---------- 立绘状态控制 ---------- */
+  // 是否处于“被戳后的临时表情”
+  let spriteTemp = false;
+  let spriteFlashTimeout = null;
+
+  function updateSpriteImage() {
+    if (spriteTemp) {
+      // 被戳时显示的立绘
+      spriteImg.src = "images/jth_stand_alt2.png";
+      return;
+    }
+
+    // 正常逻辑：根据心情 / 压力选择立绘
+    if (state.mood > 80 && state.stress < 35) {
+      spriteImg.src = "images/jth_stand_alt.png";
+    } else {
+      spriteImg.src = "images/jth_stand.png";
+    }
+  }
 
   /* ---------- 标签页切换 ---------- */
   const tabButtons = document.querySelectorAll(".tab-btn");
@@ -588,40 +622,40 @@
   document.querySelectorAll(".action-card").forEach(btn => {
     btn.addEventListener("click", () => act(btn.dataset.action));
   });
+
   document.querySelectorAll(".task-btn").forEach(btn => {
     btn.addEventListener("click", () => taskAct(btn.dataset.task));
   });
+
   document.getElementById("chatSendBtn").addEventListener("click", () => {
     const text = chatPreset.value;
     if (!text) return;
     pushChat("you", text);
     respondChat(text);
   });
-  // 点击立绘：短暂切换成 alt2 再切回
-  let spriteFlashTimeout = null;
 
+  // ★ 点击立绘：短暂切换成 alt2 再切回
   sprite.addEventListener("click", () => {
-    // 这里你也可以顺便加一点心情变动之类的
-    // changeStat("mood", +1);
+    // 你也可以在这里顺便加一点属性变化
+    changeStat("mood", +1);
 
-    // 如果之前还有没结束的计时器，先清掉
+    // 如果上一次的计时还没结束，先取消
     if (spriteFlashTimeout) {
       clearTimeout(spriteFlashTimeout);
       spriteFlashTimeout = null;
     }
 
-    // 进入临时表情状态
     spriteTemp = true;
     updateSpriteImage();
 
-    // 约 0.5 秒后自动恢复原本状态
+    // 0.5 秒后恢复正常立绘逻辑
     spriteFlashTimeout = setTimeout(() => {
       spriteTemp = false;
       updateSpriteImage();
-    }, 500); // 想更久一点可以改成 700 或 800
+    }, 500);
   });
 
-  /* ---------- 行为逻辑：桌面 ---------- */
+  /* ---------- 桌面行为 ---------- */
   function act(action) {
     switch (action) {
       case "pet":
@@ -649,7 +683,7 @@
     updateUI();
   }
 
-  /* ---------- 行为逻辑：任务 ---------- */
+  /* ---------- 任务行为 ---------- */
   function taskAct(action) {
     switch (action) {
       case "spawn":
@@ -682,7 +716,7 @@
         appendTaskLog("你们默契地假装没看到待办。明天的他可能会后悔。");
         break;
     }
-    // 模式文案
+
     if (state.workload > 70) taskMode.textContent = "堆积如山";
     else if (state.workload > 40) taskMode.textContent = "适度忙碌";
     else if (state.workload > 10) taskMode.textContent = "掌控之中";
@@ -755,6 +789,7 @@
     } else {
       reply = "嗯，我在听。";
     }
+
     chatStatus.textContent = "状态：回复中…";
     saveState();
     setTimeout(() => {
@@ -770,6 +805,7 @@
     moodBar.style.width = state.mood + "%";
     stressBar.style.width = state.stress + "%";
     workloadBar.style.width = state.workload + "%";
+
     moodText.textContent = state.mood + "/100";
     stressText.textContent = state.stress + "/100";
     workloadText.textContent = state.workload + "/100";
@@ -791,27 +827,10 @@
     updateSpriteImage();
   }
 
-  // 单独管理立绘状态（正常 / 开心 / 被戳）
-  let spriteTemp = false;   // 是否处于“被戳后临时表情”
-
-  function updateSpriteImage() {
-    if (spriteTemp) {
-      // 被戳之后的临时图
-      spriteImg.src = "images/jth_stand_alt2.png";
-      return;
-    }
-
-    // 正常逻辑：根据心情/压力决定是普通立绘还是 开心立绘
-    if (state.mood > 80 && state.stress < 35) {
-      spriteImg.src = "images/jth_stand_alt.png";
-    } else {
-      spriteImg.src = "images/jth_stand.png";
-    }
-  }
-
   function appendDeskLog(text) {
     state.deskLog = (state.deskLog ? state.deskLog + "\n- " : "- ") + text;
   }
+
   function appendTaskLog(text) {
     state.taskLog = (state.taskLog ? state.taskLog + "\n- " : "- ") + text;
   }
@@ -819,14 +838,19 @@
   function changeStat(key, delta) {
     state[key] = clamp((state[key] ?? 0) + delta);
   }
-  function clamp(v) { return Math.max(0, Math.min(100, v)); }
+
+  function clamp(v) {
+    return Math.max(0, Math.min(100, v));
+  }
 
   function saveState() {
-    localStorage.setItem("jth_pet_state_v2", JSON.stringify(state));
+    // 换一个新的 key，避免旧版本存档格式冲突
+    localStorage.setItem("jth_pet_state_v3", JSON.stringify(state));
   }
+
   function loadState() {
     try {
-      const raw = localStorage.getItem("jth_pet_state_v2");
+      const raw = localStorage.getItem("jth_pet_state_v3");
       return raw ? JSON.parse(raw) : structuredClone(DEFAULT_STATE);
     } catch {
       return structuredClone(DEFAULT_STATE);
